@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">FinalApp</string>
+    <string name="title_activity_home">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_strategy">Strategy</string>
+    <string name="title_score">Score</string>
+
+    <string name="solving_button">Solving</string>
+    <string name="time_attack_button">Time Attack</string>
+    <string name="vs_cpu_button">vs CPU</string>
+
+</resources>
