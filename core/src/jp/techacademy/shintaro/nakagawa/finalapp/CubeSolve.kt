@@ -1,7 +1,7 @@
 package jp.techacademy.shintaro.nakagawa.finalapp
 
 import com.badlogic.gdx.Application
-import com.badlogic.gdx.ApplicationListener
+import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -19,7 +19,10 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
 /**
  * Rubik's cube in libgdx
  */
-class CubeSolve : ApplicationListener {
+class CubeSolve(private val isDetect: Boolean = false,
+                private val isBack:Boolean = false,
+                private val colorArray: Array<Array<Array<Cubelet?>>>,
+                val sidePosition: Int = -1) : Game() {
     private var environment: Environment? = null
     private var hudCam: OrthographicCamera? = null
     private var cam: PerspectiveCamera? = null
@@ -34,9 +37,9 @@ class CubeSolve : ApplicationListener {
      * @return The cube being rendered
      */
     var cube: Cube? = null
-        private set
     private var solved = true
     private var lastFpsUpdate: Long = 0
+
     override fun create() {
         environment = Environment()
         environment!!.set(ColorAttribute(ColorAttribute.AmbientLight, 1f, 1f, 1f, 0.8f))
@@ -49,7 +52,7 @@ class CubeSolve : ApplicationListener {
         cam!!.near = 1f
         cam!!.far = 300f
         cam!!.update()
-        cube = Cube(3)
+        cube = Cube(3, isDetect, colorArray, sidePosition)
         hudCam = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         hudBatch = SpriteBatch()
         hudBatch!!.projectionMatrix = hudCam!!.combined
@@ -115,36 +118,6 @@ class CubeSolve : ApplicationListener {
         } else {
             Gdx.graphics.setTitle("CubeSolve")
         }
-    }
-
-    fun setGray() {
-        environment = Environment()
-        environment!!.set(ColorAttribute(ColorAttribute.AmbientLight, 1f, 1f, 1f, 0.8f))
-        environment!!.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, 1f, 1f, 1f))
-        environment!!.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -1f, -1f))
-        modelBatch = ModelBatch()
-        cam = PerspectiveCamera(67f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        cam!!.position[13f, 13f] = 5f
-        cam!!.lookAt(0f, 0f, 0f)
-        cam!!.near = 1f
-        cam!!.far = 300f
-        cam!!.update()
-        cube = Cube(3)
-        hudCam = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        hudBatch = SpriteBatch()
-        hudBatch!!.projectionMatrix = hudCam!!.combined
-        fpsFont = BitmapFont()
-        if (Gdx.app.type == Application.ApplicationType.Desktop || Gdx.app.type == Application.ApplicationType.WebGL) {
-            controlsCache = BitmapFontCache(fpsFont, true)
-            createControlsCache()
-        }
-        fpsCache = BitmapFontCache(fpsFont, true)
-        updateFpsCache()
-        camController = CubeSolveInputProcessor(this, cam)
-        Gdx.input.inputProcessor = camController
-        Gdx.graphics.isContinuousRendering = true
-        cube!!.setGray()
-        render()
     }
 
     private fun createControlsCache() {

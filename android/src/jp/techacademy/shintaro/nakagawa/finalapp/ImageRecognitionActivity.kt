@@ -3,8 +3,8 @@ package jp.techacademy.shintaro.nakagawa.finalapp
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -24,6 +24,10 @@ class ImageRecognitionActivity : AndroidApplication() {
         const val M_SQUARE = 100
     }
 
+    private val size: Int = 3
+    private var cubelets = Array<Array<Array<Cubelet?>>>(size) { Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) } }
+    private var side: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_recognition)
@@ -32,12 +36,35 @@ class ImageRecognitionActivity : AndroidApplication() {
         OpenCVLoader.initDebug()  // ← OpenCVライブラリ読込
         initCamera()
 
+        for (i in cubelets!!.indices) {
+            for (j in cubelets[0].indices) {
+                for (k in cubelets[0][0].indices) {
+                    // Don't add cubelets that are internal
+                    if (i > 0 && i < cubelets.size - 1
+                            && j > 0 && j < cubelets.size - 1
+                            && k > 0 && k < cubelets.size - 1) continue
+                    cubelets[i][j][k] = PlainCubelet(
+                            PlainCubelet.CubeletColor.GRAY,
+                            PlainCubelet.CubeletColor.BLACK,
+                            PlainCubelet.CubeletColor.BLACK,
+                            PlainCubelet.CubeletColor.BLACK,
+                            PlainCubelet.CubeletColor.BLACK,
+                            PlainCubelet.CubeletColor.BLACK)
+                    cubelets[i][j][k]!!.setMask(true, true, true, true, true, true)
+                }
+            }
+        }
         val r: RelativeLayout = findViewById(R.id.gdx_view)
-        val drawListener = CubeSolve()
+        val drawListener = CubeSolve(true, colorArray = cubelets)
         val view: View = initializeForView(drawListener)
         r.addView(view)
 
-        drawListener.create()
+        val okButton: Button = findViewById(R.id.ok_button)
+        okButton.setOnClickListener {
+            val view: View = initializeForView(CubeSolve(true, colorArray = cubelets, sidePosition = side,))
+            r.removeAllViews()
+            r.addView(view)
+        }
     }
 
     private fun initCamera() {
@@ -132,12 +159,14 @@ class ImageRecognitionActivity : AndroidApplication() {
         val yellow = listOf(Scalar(25.0, 80.0, 10.0), Scalar(45.0, 255.0, 255.0))
         val orange = listOf(Scalar(0.0, 100.0, 100.0), Scalar(25.0, 255.0, 255.0))
         val color_list = listOf(white, red, blue, green, yellow, orange)
+        val fillColor = listOf(Scalar(255.0, 255.0, 255.0), Scalar(255.0, 0.0, 0.0),
+                               Scalar(0.0, 0.0, 255.0), Scalar(0.0, 255.0, 0.0),
+                               Scalar(255.0, 255.0, 0.0), Scalar(255.0, 140.0, 0.0))
         val colorName_list = listOf("White", "Red", "Blue", "Green", "Yellow", "Orange")
 
 
 //        Log.d("native", mat.nativeObj.toString())
         rectangle(mat, pt1, pt2, frameColor, 2)
-        rectangle(mat, pt1, Point(pt1.x + 30.0, pt1.y + 30.0), frameColor, 2)
         cvtColor(squareMat, squareMat, COLOR_RGBA2BGR)
         cvtColor(squareMat, squareMat, COLOR_BGR2HSV)
 
@@ -160,7 +189,8 @@ class ImageRecognitionActivity : AndroidApplication() {
             }
         }
         if (color_num != -1 && max_color >= 30) {
-            Log.d("kotlintest", "${colorName_list[color_num]} Area [%] : $max_color")
+//            Log.d("kotlintest", "${colorName_list[color_num]} Area [%] : $max_color")
+            rectangle(mat, pt1, Point(pt1.x + 30.0, pt1.y + 30.0), fillColor[color_num], -1)
         }
 
         return color_num

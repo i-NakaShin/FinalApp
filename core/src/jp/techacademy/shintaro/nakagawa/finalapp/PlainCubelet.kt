@@ -184,7 +184,7 @@ class PlainCubelet(private var topColor: CubeletColor, private var bottomColor: 
         WHITE(1f, 1f, 1f),
         ORANGE(0.8f, 0.3f, 0f),
         BLACK(0f, 0f, 0f),
-        GRAY(0.67f, 0.67f, 0.67f);
+        GRAY(0.5f, 0.5f, 0.5f);
 
         /**
          * @return The GDX color representing the cubelet color

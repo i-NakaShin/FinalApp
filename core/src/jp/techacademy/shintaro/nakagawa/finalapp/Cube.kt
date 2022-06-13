@@ -20,8 +20,11 @@ class Cube(
         /**
          * @return Number of rows in the cube
          */
-        val size: Int) : Disposable {
-    private val cubelets: Array<Array<Array<Cubelet?>>>
+        val size: Int,
+        private val isDetect: Boolean = false,
+        private val colorArray: Array<Array<Array<Cubelet?>>>,
+        val sidePosition: Int = -1): Disposable {
+    private var cubelets: Array<Array<Array<Cubelet?>>>
     private var mesh: Mesh? = null
     private var model: Model? = null
     private var modelInstance: ModelInstance? = null
@@ -121,13 +124,21 @@ class Cube(
      * Rotate a column tall-wise counter-clockwise
      * @param row Row (x) to rotate
      */
-    fun rotateColumn(row: Int) {
+    fun rotateColumn(row: Int, reverse: Boolean = false) {
+        var cubelets_tmp = Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) }
         for (y in 0 until size) {
             for (z in 0 until size) {
                 val cblt: Cubelet = cubelets[row][y][z] ?: continue
-                cblt.rotateTallCCW()
+                if ((!reverse && row < size - 1) || (reverse && row == size - 1)) {
+                    cblt.rotateTallCCW()
+                    cubelets_tmp[2 - z][y] = cblt
+                } else {
+                    cblt.rotateTallCW()
+                    cubelets_tmp[z][2 - y] = cblt
+                }
             }
         }
+        cubelets[row] = cubelets_tmp
         if (!disableAutoRerender) rerenderCube()
     }
 
@@ -135,11 +146,23 @@ class Cube(
      * Rotate a row wide-wise counter-clockwise
      * @param row Row (y) to rotate
      */
-    fun rotateRow(row: Int) {
+    fun rotateRow(row: Int, reverse: Boolean = false) {
+        var cubelets_tmp = Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) }
         for (x in 0 until size) {
             for (z in 0 until size) {
                 val cblt: Cubelet = cubelets[x][row][z] ?: continue
-                cblt.rotateWideCCW()
+                if ((!reverse && row < size - 1) || (reverse && row == size - 1)) {
+                    cblt.rotateWideCCW()
+                    cubelets_tmp[2 - z][x] = cblt
+                } else {
+                    cblt.rotateWideCW()
+                    cubelets_tmp[z][2 - x] = cblt
+                }
+            }
+        }
+        for (x in 0 until size) {
+            for (z in 0 until size) {
+                cubelets[x][row][z] = cubelets_tmp[x][z]
             }
         }
         if (!disableAutoRerender) rerenderCube()
@@ -149,11 +172,23 @@ class Cube(
      * Rotate a face depth-wise counter-clockwise
      * @param row Row (z) to rotate
      */
-    fun rotateFace(row: Int) {
+    fun rotateFace(row: Int, reverse: Boolean = false) {
+        var cubelets_tmp = Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) }
         for (x in 0 until size) {
             for (y in 0 until size) {
                 val cblt: Cubelet = cubelets[x][y][row] ?: continue
-                cblt.rotateDepthCCW()
+                if ((!reverse && row < size - 1) || (reverse && row == size - 1)) {
+                    cblt.rotateDepthCCW()
+                    cubelets_tmp[2 - y][x] = cblt
+                } else {
+                    cblt.rotateDepthCW()
+                    cubelets_tmp[y][2 - x] = cblt
+                }
+            }
+        }
+        for (x in 0 until size) {
+            for (y in 0 until size) {
+                cubelets[x][y][row] = cubelets_tmp[x][y]
             }
         }
         if (!disableAutoRerender) rerenderCube()
@@ -163,7 +198,11 @@ class Cube(
      * Reset the cube to its default state
      */
     fun reset() {
-        fillWithDefault()
+        if (!isDetect) {
+            fillWithDefault()
+        } else {
+            setGray()
+        }
         rerenderCube()
     }
 
@@ -242,7 +281,7 @@ class Cube(
                             PlainCubelet.CubeletColor.BLUE,
                             PlainCubelet.CubeletColor.RED,
                             PlainCubelet.CubeletColor.ORANGE)
-                    cubelets[i][j][k]!!.setMask(j == cubelets.size - 1, j == 0, i == 0, i == cubelets.size - 1, k == cubelets.size - 1, k == 0)
+                    cubelets[i][j][k]!!.setMask(true, true, true, true, true, true)
                 }
             }
         }
@@ -280,7 +319,11 @@ class Cube(
         cubeletTexture = Texture(Gdx.files.internal("cubelet.png"))
         cubeMaterial = Material(ColorAttribute.createSpecular(Color.WHITE),
                 TextureAttribute.createDiffuse(cubeletTexture))
-        fillWithDefault()
+        if (!isDetect) {
+            fillWithDefault()
+        } else {
+            cubelets = colorArray
+        }
         rerenderCube()
     }
 }
