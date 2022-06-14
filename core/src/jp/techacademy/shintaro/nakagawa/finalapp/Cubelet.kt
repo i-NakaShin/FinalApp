@@ -65,4 +65,6 @@ interface Cubelet {
      * @return Color of the specified side
      */
     fun getColor(side: PlainCubelet.CubeletSide?): PlainCubelet.CubeletColor?
+
+    fun setColor(side: PlainCubelet.CubeletSide, color: PlainCubelet.CubeletColor)
 }

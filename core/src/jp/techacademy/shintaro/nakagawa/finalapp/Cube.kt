@@ -22,7 +22,8 @@ class Cube(
          */
         val size: Int,
         private val isDetect: Boolean = false,
-        private val colorArray: Array<Array<Array<Cubelet?>>>,
+        private val isBack: Boolean = false,
+        private val colorArray: Array<Array<Array<Cubelet?>>>? = null,
         val sidePosition: Int = -1): Disposable {
     private var cubelets: Array<Array<Array<Cubelet?>>>
     private var mesh: Mesh? = null
@@ -279,8 +280,8 @@ class Cube(
                             PlainCubelet.CubeletColor.YELLOW,
                             PlainCubelet.CubeletColor.GREEN,
                             PlainCubelet.CubeletColor.BLUE,
-                            PlainCubelet.CubeletColor.RED,
-                            PlainCubelet.CubeletColor.ORANGE)
+                            PlainCubelet.CubeletColor.ORANGE,
+                            PlainCubelet.CubeletColor.RED)
                     cubelets[i][j][k]!!.setMask(true, true, true, true, true, true)
                 }
             }
@@ -322,7 +323,66 @@ class Cube(
         if (!isDetect) {
             fillWithDefault()
         } else {
-            cubelets = colorArray
+            cubelets = colorArray!!
+            if (sidePosition >= 0) {
+                when (sidePosition) {
+                    0 -> {
+                        for (x in 0..2) {
+                            for (y in 0..2) {
+                                if (!isBack) {
+                                    cubelets[x][y][2]!!.setColor(CubeletSide.SOUTH, PlainCubelet.CubeletColor.GRAY)
+                                } else {
+
+                                }
+                            }
+                        }
+                    }
+                    1 -> {
+                        for (y in 0..2) {
+                            for (z in 0..2) {
+                                if (!isBack) {
+                                    cubelets[0][y][z]!!.setColor(CubeletSide.WEST, PlainCubelet.CubeletColor.GRAY)
+                                } else {
+
+                                }
+                            }
+                        }
+                    }
+                    2 -> {
+                        for (x in 0..2) {
+                            for (y in 0..2) {
+                                if (!isBack) {
+                                    cubelets[x][y][0]!!.setColor(CubeletSide.NORTH, PlainCubelet.CubeletColor.GRAY)
+                                } else {
+
+                                }
+                            }
+                        }
+                    }
+                    3 -> {
+                        for (y in 0..2) {
+                            for (z in 0..2) {
+                                if (!isBack) {
+                                    cubelets[2][y][z]!!.setColor(CubeletSide.EAST, PlainCubelet.CubeletColor.GRAY)
+                                } else {
+
+                                }
+                            }
+                        }
+                    }
+                    4 -> {
+                        for (x in 0..2) {
+                            for (z in 0..2) {
+                                if (!isBack) {
+                                    cubelets[x][0][z]!!.setColor(CubeletSide.BOTTOM, PlainCubelet.CubeletColor.GRAY)
+                                } else {
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         rerenderCube()
     }

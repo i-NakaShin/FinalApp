@@ -36,18 +36,18 @@ class PlainCubelet(private var topColor: CubeletColor, private var bottomColor: 
         if (southMask) {
             builder!!.setColor(southColor.gdxColor)
             builder.setUVRange(0f, 0f, 1f, 1f)
-            builder.rect(x, y + depth, z,
-                    x + depth, y + depth, z,
-                    x + depth, y, z,
-                    x, y, z, 0f, 0f, -1f)
-        }
-        if (northMask) {
-            builder!!.setColor(northColor.gdxColor)
-            builder.setUVRange(0f, 0f, 1f, 1f)
             builder.rect(x, y, z + depth,
                     x + depth, y, z + depth,
                     x + depth, y + depth, z + depth,
                     x, y + depth, z + depth, 0f, 0f, 1f)
+        }
+        if (northMask) {
+            builder!!.setColor(northColor.gdxColor)
+            builder.setUVRange(0f, 0f, 1f, 1f)
+            builder.rect(x, y + depth, z,
+                    x + depth, y + depth, z,
+                    x + depth, y, z,
+                    x, y, z, 0f, 0f, -1f)
         }
         if (westMask) {
             builder!!.setUVRange(0f, 0f, 1f, 1f)
@@ -173,6 +173,17 @@ class PlainCubelet(private var topColor: CubeletColor, private var bottomColor: 
             CubeletSide.NORTH -> northColor
             CubeletSide.SOUTH -> southColor
             else -> null
+        }
+    }
+
+    override fun setColor(side: CubeletSide, color: CubeletColor) {
+        when (side) {
+            CubeletSide.TOP -> topColor = color
+            CubeletSide.BOTTOM -> bottomColor = color
+            CubeletSide.WEST -> westColor = color
+            CubeletSide.EAST -> eastColor = color
+            CubeletSide.NORTH -> northColor = color
+            CubeletSide.SOUTH -> southColor = color
         }
     }
 

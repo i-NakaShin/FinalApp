@@ -3,6 +3,7 @@ package jp.techacademy.shintaro.nakagawa.finalapp
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.RelativeLayout
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.badlogic.gdx.backends.android.AndroidApplication
+import kotlinx.coroutines.delay
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.JavaCameraView
 import org.opencv.android.OpenCVLoader
@@ -27,6 +29,7 @@ class ImageRecognitionActivity : AndroidApplication() {
     private val size: Int = 3
     private var cubelets = Array<Array<Array<Cubelet?>>>(size) { Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) } }
     private var side: Int = 0
+    private var isReflection: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,9 +64,37 @@ class ImageRecognitionActivity : AndroidApplication() {
 
         val okButton: Button = findViewById(R.id.ok_button)
         okButton.setOnClickListener {
-            val view: View = initializeForView(CubeSolve(true, colorArray = cubelets, sidePosition = side,))
+            isReflection = true
+            Log.d("kotlintest", "sidePosition : " + side.toString())
+            val view: View = initializeForView(CubeSolve(true, colorArray = cubelets, sidePosition = side))
             r.removeAllViews()
             r.addView(view)
+
+            val thread = Thread(Runnable {
+                try {
+                    Thread.sleep(1000)
+                    if (side < 5) {
+                        side++
+                        Log.d("kotlintest", "clickPosition : " + side.toString())
+                    }
+                    isReflection = false
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+            })
+            thread.start()
+//            if (side < 5) {
+//                side++
+//                Log.d("kotlintest", "clickPosition : " + side.toString())
+//            }
+//            isReflection = false
+        }
+
+        val backButton: Button = findViewById(R.id.back_button)
+        backButton.setOnClickListener {
+            if (side > 0) {
+                side--
+            }
         }
     }
 
@@ -127,10 +158,41 @@ class ImageRecognitionActivity : AndroidApplication() {
                                 pt8, pt13,
                                 pt9, pt14)
 //        val color_list = listOf(Scalar(), red, blue, green, yellow, orange)
-        var faces = mutableListOf<Int>()
-
-        for (i in 0 until 18 step 2) {
-            faces.add(detectColor(mat, point_list[i], point_list[i + 1]))
+        if (!isReflection) {
+            for (i in 0 until 18 step 2) {
+                when (side) {
+                    0 -> {
+                        val x = i / 2 % 3
+                        val z = i / 6
+                        cubelets[x][2][z]!!.setColor(PlainCubelet.CubeletSide.TOP, detectColor(mat, point_list[i], point_list[i + 1]))
+                    }
+                    1 -> {
+                        val x = i / 2 % 3
+                        val y = 2 - i / 6
+                        cubelets[x][y][2]!!.setColor(PlainCubelet.CubeletSide.SOUTH, detectColor(mat, point_list[i], point_list[i + 1]))
+                    }
+                    2 -> {
+                        val y = 2 - i / 6
+                        val z = i / 2 % 3
+                        cubelets[0][y][z]!!.setColor(PlainCubelet.CubeletSide.WEST, detectColor(mat, point_list[i], point_list[i + 1]))
+                    }
+                    3 -> {
+                        val x = 2 - i / 2 % 3
+                        val y = 2 - i / 6
+                        cubelets[x][y][0]!!.setColor(PlainCubelet.CubeletSide.NORTH, detectColor(mat, point_list[i], point_list[i + 1]))
+                    }
+                    4 -> {
+                        val y = 2 - i / 6
+                        val z = 2 - i / 2 % 3
+                        cubelets[2][y][z]!!.setColor(PlainCubelet.CubeletSide.EAST, detectColor(mat, point_list[i], point_list[i + 1]))
+                    }
+                    5 -> {
+                        val x = 2 - i / 6
+                        val z = 2 - i / 2 % 3
+                        cubelets[x][0][z]!!.setColor(PlainCubelet.CubeletSide.BOTTOM, detectColor(mat, point_list[i], point_list[i + 1]))
+                    }
+                }
+            }
         }
 
 //        detectColor(mat, point_list[0], point_list[1])
@@ -147,7 +209,7 @@ class ImageRecognitionActivity : AndroidApplication() {
 //        cvtColor(mat, mat, COLOR_GRAY2BGR)
     }
 
-    private fun detectColor(mat: Mat, pt1: Point, pt2: Point): Int {
+    private fun detectColor(mat: Mat, pt1: Point, pt2: Point): PlainCubelet.CubeletColor {
         val squareMat = Mat(mat, Rect(pt1, pt2))
         var result = Mat()
         squareMat.copyTo(result)
@@ -162,8 +224,12 @@ class ImageRecognitionActivity : AndroidApplication() {
         val fillColor = listOf(Scalar(255.0, 255.0, 255.0), Scalar(255.0, 0.0, 0.0),
                                Scalar(0.0, 0.0, 255.0), Scalar(0.0, 255.0, 0.0),
                                Scalar(255.0, 255.0, 0.0), Scalar(255.0, 140.0, 0.0))
-        val colorName_list = listOf("White", "Red", "Blue", "Green", "Yellow", "Orange")
-
+        val colorName_list = listOf(PlainCubelet.CubeletColor.WHITE,
+                                    PlainCubelet.CubeletColor.RED,
+                                    PlainCubelet.CubeletColor.BLUE,
+                                    PlainCubelet.CubeletColor.GREEN,
+                                    PlainCubelet.CubeletColor.YELLOW,
+                                    PlainCubelet.CubeletColor.ORANGE)
 
 //        Log.d("native", mat.nativeObj.toString())
         rectangle(mat, pt1, pt2, frameColor, 2)
@@ -191,9 +257,10 @@ class ImageRecognitionActivity : AndroidApplication() {
         if (color_num != -1 && max_color >= 30) {
 //            Log.d("kotlintest", "${colorName_list[color_num]} Area [%] : $max_color")
             rectangle(mat, pt1, Point(pt1.x + 30.0, pt1.y + 30.0), fillColor[color_num], -1)
+            return colorName_list[color_num]
         }
 
-        return color_num
+        return PlainCubelet.CubeletColor.GRAY
     }
 
     //パーミッションのチェックを設定するためのメソッド

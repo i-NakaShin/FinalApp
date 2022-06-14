@@ -12,7 +12,6 @@ import com.badlogic.gdx.backends.android.AndroidFragmentApplication
 import jp.techacademy.shintaro.nakagawa.finalapp.*
 
 class HomeFragment : AndroidFragmentApplication() {
-//class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
 
@@ -30,11 +29,9 @@ class HomeFragment : AndroidFragmentApplication() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-//        for (i in 0 until 100 step 10) {
-//            Log.d("kotlintest", i.toString())
-//        }
-//        var list: Array<Array<Array<Cubelet?>>> = arrayOf(arrayOf(arrayOf()))
-//        Log.d("kotlintest", list!!.size.toString())
+        var i: Int = 2
+        i = i / 3 * 3
+//        Log.d("kotlintest", i.toString())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -52,10 +49,8 @@ class HomeFragment : AndroidFragmentApplication() {
 
         val r: RelativeLayout = root.findViewById(R.id.home_gdx_view)
         val drawListener = CubeSolve()
-//        drawListener.cube!!.rotateColumn(0)
         var view: View = initializeForView(drawListener)
         r.addView(view)
-//        drawListener.cube = Cube(4, false)
 
         val solvingButton: Button = root.findViewById(R.id.solving_button)
         solvingButton.setOnClickListener {
@@ -65,20 +60,14 @@ class HomeFragment : AndroidFragmentApplication() {
 
         val timeAttackButton: Button = root.findViewById(R.id.time_attack_button)
         timeAttackButton.setOnClickListener {
-//            val intent = Intent(activity, TimeAttackActivity::class.java)
-//            startActivity(intent)
-            view = initializeForView(CubeSolve(true))
-            r.removeAllViews()
-            r.addView(view)
+            val intent = Intent(activity, TimeAttackActivity::class.java)
+            startActivity(intent)
         }
 
         val vsCpuButton: Button = root.findViewById(R.id.vs_cpu_button)
         vsCpuButton.setOnClickListener {
-//            val intent = Intent(activity, vsCpuActivity::class.java)
-//            startActivity(intent)
-            view = initializeForView(CubeSolve())
-            r.removeAllViews()
-            r.addView(view)
+            val intent = Intent(activity, vsCpuActivity::class.java)
+            startActivity(intent)
         }
 
         return root
