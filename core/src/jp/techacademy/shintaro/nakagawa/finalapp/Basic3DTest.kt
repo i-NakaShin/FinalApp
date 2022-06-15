@@ -61,7 +61,7 @@ class Basic3DTest : ApplicationListener {
         instance3 = ModelInstance(model3)
 
         camController = CameraInputController(cam)
-        Gdx.input.setInputProcessor(camController)
+        Gdx.input.inputProcessor = camController
     }
 
     override fun render() {

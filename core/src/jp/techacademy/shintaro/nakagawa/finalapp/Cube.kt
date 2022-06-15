@@ -28,7 +28,7 @@ class Cube(
     private var cubelets: Array<Array<Array<Cubelet?>>>
     private var mesh: Mesh? = null
     private var model: Model? = null
-    private var modelInstance: ModelInstance? = null
+    var modelInstance: ModelInstance? = null
     private val modelBuilder: ModelBuilder
     private var disableAutoRerender = false
     private val cubeletTexture: Texture
@@ -131,10 +131,10 @@ class Cube(
             for (z in 0 until size) {
                 val cblt: Cubelet = cubelets[row][y][z] ?: continue
                 if ((!reverse && row < size - 1) || (reverse && row == size - 1)) {
-                    cblt.rotateTallCCW()
+                    cblt.rotateTallCW()
                     cubelets_tmp[2 - z][y] = cblt
                 } else {
-                    cblt.rotateTallCW()
+                    cblt.rotateTallCCW()
                     cubelets_tmp[z][2 - y] = cblt
                 }
             }
@@ -153,10 +153,10 @@ class Cube(
             for (z in 0 until size) {
                 val cblt: Cubelet = cubelets[x][row][z] ?: continue
                 if ((!reverse && row < size - 1) || (reverse && row == size - 1)) {
-                    cblt.rotateWideCCW()
+                    cblt.rotateWideCW()
                     cubelets_tmp[2 - z][x] = cblt
                 } else {
-                    cblt.rotateWideCW()
+                    cblt.rotateWideCCW()
                     cubelets_tmp[z][2 - x] = cblt
                 }
             }
@@ -179,10 +179,10 @@ class Cube(
             for (y in 0 until size) {
                 val cblt: Cubelet = cubelets[x][y][row] ?: continue
                 if ((!reverse && row < size - 1) || (reverse && row == size - 1)) {
-                    cblt.rotateDepthCCW()
+                    cblt.rotateDepthCW()
                     cubelets_tmp[2 - y][x] = cblt
                 } else {
-                    cblt.rotateDepthCW()
+                    cblt.rotateDepthCCW()
                     cubelets_tmp[y][2 - x] = cblt
                 }
             }

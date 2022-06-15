@@ -1,7 +1,7 @@
 package jp.techacademy.shintaro.nakagawa.finalapp
 
 import com.badlogic.gdx.Application
-import com.badlogic.gdx.Game
+import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -20,9 +20,9 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
  * Rubik's cube in libgdx
  */
 class CubeSolve(private val isDetect: Boolean = false,
-                private val isBack:Boolean = false,
+                private val isBack: Boolean = false,
                 private val colorArray: Array<Array<Array<Cubelet?>>>? = null,
-                val sidePosition: Int = -1) : Game() {
+                val sidePosition: Int = -1) : ApplicationListener {
     private var environment: Environment? = null
     private var hudCam: OrthographicCamera? = null
     private var cam: PerspectiveCamera? = null
@@ -46,37 +46,54 @@ class CubeSolve(private val isDetect: Boolean = false,
         environment!!.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, 1f, 1f, 1f))
         environment!!.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -1f, -1f))
         modelBatch = ModelBatch()
+        cube = Cube(3, isDetect, colorArray = colorArray, sidePosition = sidePosition)
         cam = PerspectiveCamera(67f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         cam!!.position[13f, 13f] = 13f
+//        cam!!.rotate(270f, 1f, 0f, 0f)
         cam!!.lookAt(0f, 0f, 0f)
         if (isDetect) {
             when (sidePosition) {
                 -1 -> {
-                    cam!!.position[5f, 20f] = 5f
-                    cam!!.lookAt(5f, 0f, 5f)
+                    cam!!.position[0f, 20f] = 0f
+                    cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+//                    cam!!.transform()
                 }
                 0 -> {
-                    cam!!.position[13f, 13f] = 13f
+                    cam!!.position[0f, 20f] = 0f
                     cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -45f)
+
                 }
                 1 -> {
-                    cam!!.position[13f, 13f] = 13f
+                    cam!!.position[0f, 20f] = 0f
                     cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 60f)
                 }
                 2 -> {
-                    cam!!.position[13f, 13f] = 13f
+                    cam!!.position[0f, 20f] = 0f
                     cam!!.lookAt(0f, 0f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 150f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 0f, 1f, -60f)
                 }
                 3 -> {
-                    cam!!.position[13f, 13f] = 13f
+                    cam!!.position[0f, 20f] = 0f
                     cam!!.lookAt(0f, 0f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 240f)
                 }
                 4 -> {
-                    cam!!.position[13f, 13f] = 13f
+                    cam!!.position[0f, 20f] = 0f
                     cam!!.lookAt(0f, 0f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 330f)
                 }
                 5 -> {
-                    cam!!.position[13f, 13f] = 13f
+                    cam!!.position[0f, 20f] = 0f
                     cam!!.lookAt(0f, 0f, 0f)
                 }
             }
@@ -84,7 +101,6 @@ class CubeSolve(private val isDetect: Boolean = false,
         cam!!.near = 1f
         cam!!.far = 300f
         cam!!.update()
-        cube = Cube(3, isDetect, colorArray = colorArray, sidePosition = sidePosition)
         hudCam = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         hudBatch = SpriteBatch()
 //        hudBatch!!.projectionMatrix = hudCam!!.combined
@@ -104,9 +120,9 @@ class CubeSolve(private val isDetect: Boolean = false,
     }
 
     override fun render() {
-//        hudBatch!!.projectionMatrix = hudCam!!.combined
+        hudBatch!!.projectionMatrix = hudCam!!.combined
         camController!!.update()
-        updateFpsCache()
+//        updateFpsCache()
         Gdx.gl.glClearColor(0.2f,
                 if (solved) 0.2f + (1 + Math.sin((System.currentTimeMillis() % 6282 / 200.0f).toDouble()).toFloat()) * 0.05f else 0.2f,
                 0.2f, 1f)
@@ -115,9 +131,9 @@ class CubeSolve(private val isDetect: Boolean = false,
         cube!!.render(modelBatch!!, environment)
         modelBatch!!.end()
         hudBatch!!.begin()
-        fpsCache!!.draw(hudBatch)
+//        fpsCache!!.draw(hudBatch)
         if (Gdx.app.type == Application.ApplicationType.Desktop || Gdx.app.type == Application.ApplicationType.WebGL) {
-            controlsCache!!.draw(hudBatch)
+//            controlsCache?.draw(hudBatch)
         }
         hudBatch!!.end()
     }

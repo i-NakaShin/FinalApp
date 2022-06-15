@@ -1,6 +1,7 @@
 package jp.techacademy.shintaro.nakagawa.finalapp
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -37,7 +38,6 @@ class ImageRecognitionActivity : AndroidApplication() {
         setupPermissions()
 
         OpenCVLoader.initDebug()  // ← OpenCVライブラリ読込
-        initCamera()
 
         for (i in cubelets!!.indices) {
             for (j in cubelets[0].indices) {
@@ -64,36 +64,72 @@ class ImageRecognitionActivity : AndroidApplication() {
 
         val okButton: Button = findViewById(R.id.ok_button)
         okButton.setOnClickListener {
+            if (side == 6) {
+                val intent = Intent(this, SolvingActivity::class.java)
+                startActivity(intent)
+            }
             isReflection = true
+            okButton.isClickable = false
             Log.d("kotlintest", "sidePosition : " + side.toString())
-            val view: View = initializeForView(CubeSolve(true, colorArray = cubelets, sidePosition = side))
+            val drawListener = CubeSolve(true, colorArray = cubelets, sidePosition = side)
+            val view: View = initializeForView(drawListener)
             r.removeAllViews()
             r.addView(view)
 
             val thread = Thread(Runnable {
                 try {
-                    Thread.sleep(1000)
-                    if (side < 5) {
+                    Thread.sleep(800)
+                    if (side < 6) {
                         side++
                         Log.d("kotlintest", "clickPosition : " + side.toString())
                     }
                     isReflection = false
+                    okButton.isClickable = true
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
             })
             thread.start()
-//            if (side < 5) {
-//                side++
-//                Log.d("kotlintest", "clickPosition : " + side.toString())
-//            }
-//            isReflection = false
         }
 
         val backButton: Button = findViewById(R.id.back_button)
         backButton.setOnClickListener {
-            if (side > 0) {
+            if (side >= 0) {
                 side--
+            }
+        }
+    }
+
+    //パーミッションのチェックを設定するためのメソッド
+    private fun setupPermissions() {
+        val permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            makeRequest()
+        } else {
+            initCamera()
+        }
+    }
+
+    //パーミッションをリクエストするためのメソッド
+    private fun makeRequest() {
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_REQUEST_CODE)
+    }
+
+    //パーミッションの許可の結果による実行されるメソッド
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            CAMERA_REQUEST_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    finish()
+                } else {
+                    initCamera()
+                }
+                return
             }
         }
     }
@@ -110,7 +146,10 @@ class ImageRecognitionActivity : AndroidApplication() {
                 // このメソッド内で画像処理. 今回はポジネガ反転.
                 val mat = requireNotNull(inputFrame).rgba()
 //                Core.bitwise_not(mat, mat)
-                scanFrame(mat)
+
+                if (!isReflection) {
+                    scanFrame(mat)
+                }
 
                 return mat
             }
@@ -149,48 +188,47 @@ class ImageRecognitionActivity : AndroidApplication() {
         val pt13 = Point(x3, y4)
         val pt14 = Point(x4, y4)
         val point_list = listOf(pt1, pt2,
-                                pt3, pt4,
-                                pt5, pt6,
-                                pt7, pt8,
-                                pt2, pt9,
-                                pt4, pt10,
-                                pt11, pt12,
-                                pt8, pt13,
-                                pt9, pt14)
+                pt3, pt4,
+                pt5, pt6,
+                pt7, pt8,
+                pt2, pt9,
+                pt4, pt10,
+                pt11, pt12,
+                pt8, pt13,
+                pt9, pt14)
 //        val color_list = listOf(Scalar(), red, blue, green, yellow, orange)
-        if (!isReflection) {
-            for (i in 0 until 18 step 2) {
-                when (side) {
-                    0 -> {
-                        val x = i / 2 % 3
-                        val z = i / 6
-                        cubelets[x][2][z]!!.setColor(PlainCubelet.CubeletSide.TOP, detectColor(mat, point_list[i], point_list[i + 1]))
-                    }
-                    1 -> {
-                        val x = i / 2 % 3
-                        val y = 2 - i / 6
-                        cubelets[x][y][2]!!.setColor(PlainCubelet.CubeletSide.SOUTH, detectColor(mat, point_list[i], point_list[i + 1]))
-                    }
-                    2 -> {
-                        val y = 2 - i / 6
-                        val z = i / 2 % 3
-                        cubelets[0][y][z]!!.setColor(PlainCubelet.CubeletSide.WEST, detectColor(mat, point_list[i], point_list[i + 1]))
-                    }
-                    3 -> {
-                        val x = 2 - i / 2 % 3
-                        val y = 2 - i / 6
-                        cubelets[x][y][0]!!.setColor(PlainCubelet.CubeletSide.NORTH, detectColor(mat, point_list[i], point_list[i + 1]))
-                    }
-                    4 -> {
-                        val y = 2 - i / 6
-                        val z = 2 - i / 2 % 3
-                        cubelets[2][y][z]!!.setColor(PlainCubelet.CubeletSide.EAST, detectColor(mat, point_list[i], point_list[i + 1]))
-                    }
-                    5 -> {
-                        val x = 2 - i / 6
-                        val z = 2 - i / 2 % 3
-                        cubelets[x][0][z]!!.setColor(PlainCubelet.CubeletSide.BOTTOM, detectColor(mat, point_list[i], point_list[i + 1]))
-                    }
+
+        for (i in 0 until 18 step 2) {
+            when (side) {
+                0 -> {
+                    val x = i / 2 % 3
+                    val z = i / 6
+                    cubelets[x][2][z]!!.setColor(PlainCubelet.CubeletSide.TOP, detectColor(mat, point_list[i], point_list[i + 1]))
+                }
+                1 -> {
+                    val x = i / 2 % 3
+                    val y = 2 - i / 6
+                    cubelets[x][y][2]!!.setColor(PlainCubelet.CubeletSide.SOUTH, detectColor(mat, point_list[i], point_list[i + 1]))
+                }
+                2 -> {
+                    val y = 2 - i / 6
+                    val z = i / 2 % 3
+                    cubelets[0][y][z]!!.setColor(PlainCubelet.CubeletSide.WEST, detectColor(mat, point_list[i], point_list[i + 1]))
+                }
+                3 -> {
+                    val x = 2 - i / 2 % 3
+                    val y = 2 - i / 6
+                    cubelets[x][y][0]!!.setColor(PlainCubelet.CubeletSide.NORTH, detectColor(mat, point_list[i], point_list[i + 1]))
+                }
+                4 -> {
+                    val y = 2 - i / 6
+                    val z = 2 - i / 2 % 3
+                    cubelets[2][y][z]!!.setColor(PlainCubelet.CubeletSide.EAST, detectColor(mat, point_list[i], point_list[i + 1]))
+                }
+                5 -> {
+                    val x = 2 - i / 6
+                    val z = 2 - i / 2 % 3
+                    cubelets[x][0][z]!!.setColor(PlainCubelet.CubeletSide.BOTTOM, detectColor(mat, point_list[i], point_list[i + 1]))
                 }
             }
         }
@@ -203,7 +241,6 @@ class ImageRecognitionActivity : AndroidApplication() {
 //        cvtColor(mat, mat, COLOR_RGBA2BGR)
 //        cvtColor(mat, mat, COLOR_BGR2HSV)
 //        Core.inRange(mat, Scalar(90.0, 70.0, 70.0), Scalar(110.0, 255.0, 255.0), mat)
-
 
 
 //        cvtColor(mat, mat, COLOR_GRAY2BGR)
@@ -222,14 +259,14 @@ class ImageRecognitionActivity : AndroidApplication() {
         val orange = listOf(Scalar(0.0, 100.0, 100.0), Scalar(25.0, 255.0, 255.0))
         val color_list = listOf(white, red, blue, green, yellow, orange)
         val fillColor = listOf(Scalar(255.0, 255.0, 255.0), Scalar(255.0, 0.0, 0.0),
-                               Scalar(0.0, 0.0, 255.0), Scalar(0.0, 255.0, 0.0),
-                               Scalar(255.0, 255.0, 0.0), Scalar(255.0, 140.0, 0.0))
+                Scalar(0.0, 0.0, 255.0), Scalar(0.0, 255.0, 0.0),
+                Scalar(255.0, 255.0, 0.0), Scalar(255.0, 140.0, 0.0))
         val colorName_list = listOf(PlainCubelet.CubeletColor.WHITE,
-                                    PlainCubelet.CubeletColor.RED,
-                                    PlainCubelet.CubeletColor.BLUE,
-                                    PlainCubelet.CubeletColor.GREEN,
-                                    PlainCubelet.CubeletColor.YELLOW,
-                                    PlainCubelet.CubeletColor.ORANGE)
+                PlainCubelet.CubeletColor.RED,
+                PlainCubelet.CubeletColor.BLUE,
+                PlainCubelet.CubeletColor.GREEN,
+                PlainCubelet.CubeletColor.YELLOW,
+                PlainCubelet.CubeletColor.ORANGE)
 
 //        Log.d("native", mat.nativeObj.toString())
         rectangle(mat, pt1, pt2, frameColor, 2)
@@ -247,7 +284,7 @@ class ImageRecognitionActivity : AndroidApplication() {
 
             val image_size = (result.total() * result.channels()).toDouble()
             val whitePixels = Core.countNonZero(result).toDouble()
-            val whiteAreaRatio = (whitePixels/image_size) * 100
+            val whiteAreaRatio = (whitePixels / image_size) * 100
 
             if (whiteAreaRatio > max_color) {
                 max_color = whiteAreaRatio
@@ -261,37 +298,5 @@ class ImageRecognitionActivity : AndroidApplication() {
         }
 
         return PlainCubelet.CubeletColor.GRAY
-    }
-
-    //パーミッションのチェックを設定するためのメソッド
-    private fun setupPermissions() {
-        val permission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA)
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            makeRequest()
-        }
-    }
-
-    //パーミッションをリクエストするためのメソッド
-    private fun makeRequest() {
-        ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_REQUEST_CODE)
-    }
-
-    //パーミッションの許可の結果による実行されるメソッド
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
-        when(requestCode){
-            CAMERA_REQUEST_CODE -> {
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(applicationContext, "カメラ機能が許可されませんでした。", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(applicationContext, "カメラ機能が許可されました。", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
-        }
     }
 }

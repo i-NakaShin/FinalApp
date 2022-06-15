@@ -8,6 +8,7 @@ class AndroidLauncher : AndroidApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val config = AndroidApplicationConfiguration()
-        initialize(CubeSolve(), config)
+//        initialize(CubeSolve(), config)
+        initialize(Basic3DTest(), config)
     }
 }

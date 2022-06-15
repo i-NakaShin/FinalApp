@@ -24,7 +24,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
-        <activity android:name=".vsCpuActivity"></activity>
+        <activity android:name=".SolvingActivity"></activity>
+        <activity android:name=".vsCpuActivity" />
         <activity android:name=".TimeAttackActivity" />
         <activity android:name=".ImageRecognitionActivity" />
         <activity
