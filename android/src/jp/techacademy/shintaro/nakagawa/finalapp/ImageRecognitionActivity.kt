@@ -70,7 +70,8 @@ class ImageRecognitionActivity : AndroidApplication() {
             }
             isReflection = true
             okButton.isClickable = false
-            Log.d("kotlintest", "sidePosition : " + side.toString())
+//            Log.d("kotlintest", "sidePosition : " + side.toString())
+
             val drawListener = CubeSolve(true, colorArray = cubelets, sidePosition = side)
             val view: View = initializeForView(drawListener)
             r.removeAllViews()
@@ -81,7 +82,7 @@ class ImageRecognitionActivity : AndroidApplication() {
                     Thread.sleep(800)
                     if (side < 6) {
                         side++
-                        Log.d("kotlintest", "clickPosition : " + side.toString())
+//                        Log.d("kotlintest", "clickPosition : " + side.toString())
                     }
                     isReflection = false
                     okButton.isClickable = true

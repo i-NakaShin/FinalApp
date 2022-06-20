@@ -49,53 +49,48 @@ class CubeSolve(private val isDetect: Boolean = false,
         cube = Cube(3, isDetect, colorArray = colorArray, sidePosition = sidePosition)
         cam = PerspectiveCamera(67f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         cam!!.position[13f, 13f] = 13f
-//        cam!!.rotate(270f, 1f, 0f, 0f)
         cam!!.lookAt(0f, 0f, 0f)
+
         if (isDetect) {
             when (sidePosition) {
-                -1 -> {
-                    cam!!.position[0f, 20f] = 0f
-                    cam!!.lookAt(0f, 0f, 0f)
-                    cam!!.rotate(-45f, 0f, 1f, 0f)
-//                    cam!!.transform()
-                }
-                0 -> {
-                    cam!!.position[0f, 20f] = 0f
-                    cam!!.lookAt(0f, 0f, 0f)
-                    cam!!.rotate(-45f, 0f, 1f, 0f)
-                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -45f)
+                -1 -> { cam!!.position[0f, 20f] = 0f
+                        cam!!.lookAt(0f, 0f, 0f)
+                        cam!!.rotate(-45f, 0f, 1f, 0f) }
 
-                }
-                1 -> {
-                    cam!!.position[0f, 20f] = 0f
-                    cam!!.lookAt(0f, 0f, 0f)
-                    cam!!.rotate(-45f, 0f, 1f, 0f)
-                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
-                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 60f)
-                }
-                2 -> {
-                    cam!!.position[0f, 20f] = 0f
-                    cam!!.lookAt(0f, 0f, 0f)
-                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
-                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 150f)
-                    cube!!.modelInstance!!.transform.rotate(0f, 0f, 1f, -60f)
-                }
-                3 -> {
-                    cam!!.position[0f, 20f] = 0f
-                    cam!!.lookAt(0f, 0f, 0f)
-                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
-                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 240f)
-                }
-                4 -> {
-                    cam!!.position[0f, 20f] = 0f
-                    cam!!.lookAt(0f, 0f, 0f)
-                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
-                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 330f)
-                }
-                5 -> {
-                    cam!!.position[0f, 20f] = 0f
-                    cam!!.lookAt(0f, 0f, 0f)
-                }
+                0  -> { cam!!.position[0f, 20f] = 0f
+                        cam!!.lookAt(0f, 0f, 0f)
+                        cam!!.rotate(-45f, 0f, 1f, 0f)
+                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -45f) }
+
+                1  -> { cam!!.position[0f, 20f] = 0f
+                        cam!!.lookAt(0f, 0f, 0f)
+                        cam!!.rotate(-45f, 0f, 1f, 0f)
+                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 60f) }
+
+                2  -> { cam!!.position[0f, 20f] = 0f
+                        cam!!.lookAt(0f, 0f, 0f)
+                        cam!!.rotate(-45f, 0f, 1f, 0f)
+                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 150f) }
+
+                3  -> { cam!!.position[0f, 20f] = 0f
+                        cam!!.lookAt(0f, 0f, 0f)
+                        cam!!.rotate(-45f, 0f, 1f, 0f)
+                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 240f) }
+
+                4  -> { cam!!.position[0f, 20f] = 0f
+                        cam!!.lookAt(0f, 0f, 0f)
+                        cam!!.rotate(-45f, 0f, 1f, 0f)
+                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -150f)
+                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 270f) }
+
+                5  -> { cam!!.position[0f, 20f] = 0f
+                        cam!!.lookAt(0f, 0f, 0f)
+                        cam!!.rotate(-45f, 0f, 1f, 0f)
+                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -150f)
+                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 270f) }
             }
         }
         cam!!.near = 1f
@@ -112,14 +107,16 @@ class CubeSolve(private val isDetect: Boolean = false,
         fpsCache = BitmapFontCache(fpsFont, true)
         updateFpsCache()
         camController = CubeSolveInputProcessor(this, cam)
-        if (sidePosition == 5) {
+        if (sidePosition == 5 || !isDetect) {
             Gdx.input.inputProcessor = camController
         }
-        Gdx.input.inputProcessor = camController
         Gdx.graphics.isContinuousRendering = true
     }
 
     override fun render() {
+        hudBatch?.let {
+            it.projectionMatrix = hudCam!!.combined
+        }
         hudBatch!!.projectionMatrix = hudCam!!.combined
         camController!!.update()
 //        updateFpsCache()
@@ -144,6 +141,9 @@ class CubeSolve(private val isDetect: Boolean = false,
     }
 
     override fun resize(width: Int, height: Int) {
+        cam!!.apply {
+            viewportHeight = width.toFloat()
+        }
         cam!!.viewportWidth = width.toFloat()
         cam!!.viewportHeight = height.toFloat()
         cam!!.update()

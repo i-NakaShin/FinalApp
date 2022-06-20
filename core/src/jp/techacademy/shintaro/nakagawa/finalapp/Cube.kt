@@ -309,6 +309,10 @@ class Cube(
         }
     }
 
+    fun solving() {
+
+    }
+
     /**
      * Creates a Rubik's cube with the default configuration
      *
@@ -386,4 +390,38 @@ class Cube(
         }
         rerenderCube()
     }
+
+//    fun co_to_index(co: Array<Int>): Int {
+//        var index = 0
+//        for (co_i in 0 until co.size-1) {
+//            index *= 3
+//            index += co[co_i]
+//        }
+//        return index
+//    }
+//
+//    fun index_to_co(index: Int): Array<Int> {
+//        var co = Array<Int>(8){0}
+//        var sum_co = 0
+//        for(i in co.size downTo -1) {
+//            co[i] = index % 3
+//            index /= 3
+//        }
+//
+//        return co
+//    }
+//
+//    companion object {
+//        val NUM_CORNERS = 8
+//        val NUM_EDGES = 12
+//
+//        val NUM_CO = 2187  // 3 ** 7
+//        val NUM_EO = 2048  // 2 ** 11
+//        val NUM_E_COMBINATIONS = 495  // 12C4
+//
+//        val NUM_CP = 40320  // 8!
+////        val NUM_EP = 479001600  // 12! # これは使わない
+//        val NUM_UD_EP = 40320  // 8!
+//        val NUM_E_EP = 24  // 4!
+//    }
 }

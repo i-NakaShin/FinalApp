@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context=".SolvingActivity">
 
     <RelativeLayout
@@ -14,5 +15,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" >
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/symbol_list"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:textColor="@android:color/white"
+        android:text="R  R2 L  U  D"
+        app:layout_constraintTop_toBottomOf="@id/solving_gdx_view"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/current_symbol"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:textColor="@android:color/white"
+        android:textSize="30dp"
+        android:text="R"
+        app:layout_constraintTop_toBottomOf="@id/symbol_list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/prev_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/current_symbol"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/ic_baseline_arrow_forward_ios_24"
+        android:scaleX="-1"
+        android:backgroundTint="@android:color/white"
+        android:layout_marginLeft="60dp" />
+
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/current_symbol"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/ic_baseline_arrow_forward_ios_24"
+        android:backgroundTint="@android:color/white"
+        android:layout_marginRight="60dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
