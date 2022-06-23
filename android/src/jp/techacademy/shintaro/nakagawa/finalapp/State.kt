@@ -1,11 +1,12 @@
 package jp.techacademy.shintaro.nakagawa.finalapp
 
 import jp.techacademy.shintaro.nakagawa.finalapp.ui.home.HomeFragment
+import java.io.Serializable
 
-data class State(var cp: Array<Int> = arrayOf(0, 1, 2, 3, 4, 5, 6, 7),
-                 var co: Array<Int> = arrayOf(0, 0, 0, 0, 0, 0, 0, 0),
-                 var ep: Array<Int> = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
-                 var eo: Array<Int> = arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
+data class State(var cp: Array<Int>,
+                 var co: Array<Int>,
+                 var ep: Array<Int>,
+                 var eo: Array<Int>): Serializable {
 
     fun apply_move(move: State): State {
         val new_cp: Array<Int> = Array(move.cp.size){ it -> cp[move.cp[it]]}

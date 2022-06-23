@@ -28,21 +28,21 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
     var move_names_to_index = mutableMapOf<String, Int>()
     var move_names_to_index_ph2 = mutableMapOf<String, Int>()
     val move_names_ph2 = arrayOf("U", "U2", "U'", "D", "D2", "D'", "L2", "R2", "F2", "B2")
-    var inv_face = mapOf<String, Char>(
-            "U" to 'D',
-            "D" to 'U',
-            "L" to 'R',
-            "R" to 'L',
-            "F" to 'B',
-            "B" to 'F'
+    var inv_face = mapOf<Char, Char>(
+            'U' to 'D',
+            'D' to 'U',
+            'L' to 'R',
+            'R' to 'L',
+            'F' to 'B',
+            'B' to 'F'
     )
-    var num_face = mapOf<String, Int>(
-            "U" to 1,
-            "D" to 2,
-            "L" to 3,
-            "R" to 4,
-            "F" to 5,
-            "B" to 6
+    var num_face = mapOf<Char, Int>(
+            'U' to 2,
+            'D' to 1,
+            'L' to 4,
+            'R' to 3,
+            'F' to 6,
+            'B' to 5
     )
 
     init {
@@ -56,7 +56,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         for ((i, move_name) in move_names_ph2.withIndex()) {
             move_names_to_index_ph2[move_name] = i
         }
-        Log.d("kotlintest", "start co_move_table")
+        //Log.d("kotlintest", "start co_move_table")
         val time_co = measureTimeMillis {
             co_move_table = Array<Array<Int>>(NUM_CO) { Array<Int>(move_namesList.size) { 0 } }
             for (i in 0 until NUM_CO) {
@@ -73,8 +73,8 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                 }
             }
         }
-        Log.d("kotlintest", "co is $time_co")
-        Log.d("kotlintest", "start eo_move_table")
+        //Log.d("kotlintest", "co is $time_co")
+        //Log.d("kotlintest", "start eo_move_table")
         val time_eo = measureTimeMillis {
             eo_move_table = Array<Array<Int>>(NUM_EO) { Array<Int>(move_namesList.size) { 0 } }
             for (i in 0 until NUM_EO) {
@@ -90,8 +90,8 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                 }
             }
         }
-        Log.d("kotlintest", "eo is $time_eo")
-        Log.d("kotlintest", "start e_combination_table")
+        //Log.d("kotlintest", "eo is $time_eo")
+        //Log.d("kotlintest", "start e_combination_table")
         val time_e_comb = measureTimeMillis {
             e_combination_table = Array<Array<Int>>(NUM_E_COMBINATIONS) { Array<Int>(move_namesList.size) { 0 } }
             for (i in 0 until NUM_E_COMBINATIONS) {
@@ -107,8 +107,8 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                 }
             }
         }
-        Log.d("kotlintest", "e_comb is $time_e_comb")
-        Log.d("kotlintest", "start cp_move_table")
+        //Log.d("kotlintest", "e_comb is $time_e_comb")
+        //Log.d("kotlintest", "start cp_move_table")
         val time_cp = measureTimeMillis {
             cp_move_table = Array<Array<Int>>(NUM_CP) { Array<Int>(move_names_ph2.size) { 0 } }
             for (i in 0 until NUM_CP) {
@@ -124,47 +124,49 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                 }
             }
         }
-        Log.d("kotlintest", "cp is $time_cp")
-        Log.d("kotlintest", "start ud_ep_move_table")
+        //Log.d("kotlintest", "cp is $time_cp")
+        //Log.d("kotlintest", "start ud_ep_move_table")
         val time_ud_ep = measureTimeMillis {
             ud_ep_move_table = Array<Array<Int>>(NUM_UD_EP) { Array<Int>(move_names_ph2.size) { 0 } }
             for (i in 0 until NUM_UD_EP) {
                 var ep = mutableListOf<Int>(0, 0, 0, 0)
                 ep.addAll(index_to_ud_ep(i))
+//                //Log.d("kotlintest", "ep = " + ep.stream().toArray { arrayOfNulls<Int>(it) }.contentToString())
                 var state = State(
                         Array<Int>(8) { 0 },
                         Array<Int>(8) { 0 },
                         ep.stream().toArray { arrayOfNulls<Int>(it) },
                         Array<Int>(12) { 0 }
                 )
-                for (i_move in 0 until move_names_ph2.size) {
+                for (i_move in move_names_ph2.indices) {
                     var new_state = state.apply_move(moves[move_names_ph2[i_move]]!!)
-                    var new_ep = new_state.ep.slice(4 until new_state.ep.size).stream().toArray { arrayOfNulls<Int>(it) } as Array<Int>
-                    ud_ep_move_table[i][i_move] = ud_ep_to_index(new_ep)
+                    ud_ep_move_table[i][i_move] = ud_ep_to_index(new_state.ep.slice(4 until new_state.ep.size).stream().toArray { arrayOfNulls<Int>(it) })
                 }
             }
         }
-        Log.d("kotlintest", "ud_ep is $time_ud_ep")
-        Log.d("kotlintest", "start e_ep_move_table")
+        //Log.d("kotlintest", "ud_ep is $time_ud_ep")
+        //Log.d("kotlintest", "start e_ep_move_table")
         val time_e_ep = measureTimeMillis {
             e_ep_move_table = Array<Array<Int>>(NUM_E_EP) { Array<Int>(move_names_ph2.size) { 0 } }
             for (i in 0 until NUM_E_EP) {
                 var ep = index_to_e_ep(i).toMutableList()
                 ep.addAll(listOf(0, 0, 0, 0, 0, 0, 0, 0))
+                //Log.d("kotlintest", ep.stream().toArray { arrayOfNulls<Int>(it) }.contentToString())
                 var state = State(
                         Array<Int>(8) { 0 },
                         Array<Int>(8) { 0 },
                         ep.stream().toArray { arrayOfNulls<Int>(it) },
                         Array<Int>(12) { 0 }
                 )
-                for (i_move in 0 until move_names_ph2.size) {
+                for (i_move in move_names_ph2.indices) {
                     var new_state = state.apply_move(moves[move_names_ph2[i_move]]!!)
-                    e_ep_move_table[i][i_move] = e_ep_to_index(new_state.ep.slice(0..4).stream().toArray { arrayOfNulls<Int>(it) })
+                    e_ep_move_table[i][i_move] = e_ep_to_index(new_state.ep.slice(0 until 4).stream().toArray { arrayOfNulls<Int>(it) })
+//                    //Log.d("kotlintest", e_ep_move_table[i][i_move].toString())
                 }
             }
         }
-        Log.d("kotlintest", "e_ep is $time_e_ep")
-        Log.d("kotlintest", "start co_eec_prune_table")
+        //Log.d("kotlintest", "e_ep is $time_e_ep")
+        //Log.d("kotlintest", "start co_eec_prune_table")
         val time_co_eec = measureTimeMillis {
             co_eec_prune_table = Array<Array<Int>>(NUM_CO) { Array<Int>(NUM_E_COMBINATIONS) { -1 } }
             co_eec_prune_table[0][0] = 0
@@ -175,6 +177,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                             for (i_move in 0 until move_namesList.size) {
                                 val next_co = co_move_table[i_co][i_move]
                                 val next_eec = e_combination_table[i_eec][i_move]
+//                                //Log.d("kotlintest", "co : $next_co, eec : $next_eec")
                                 if (co_eec_prune_table[next_co][next_eec] == -1) {
                                     co_eec_prune_table[next_co][next_eec] = distance + 1
                                     num_filled += 1
@@ -186,8 +189,8 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                 distance += 1
             }
         }
-        Log.d("kotlintest", "co_eec is $time_co_eec")
-        Log.d("kotlintest", "start eo_eec_prune_table")
+        //Log.d("kotlintest", "co_eec is $time_co_eec")
+        //Log.d("kotlintest", "start eo_eec_prune_table")
         val time_eo_eec = measureTimeMillis {
             eo_eec_prune_table = Array<Array<Int>>(NUM_EO) { Array<Int>(NUM_E_COMBINATIONS) { -1 } }
             eo_eec_prune_table[0][0] = 0
@@ -211,16 +214,16 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                 distance += 1
             }
         }
-        Log.d("kotlintest", "eo_eec is $time_eo_eec")
-        Log.d("kotlintest", "start cp_eep_prune_table")
+        //Log.d("kotlintest", "eo_eec is $time_eo_eec")
+        //Log.d("kotlintest", "start cp_eep_prune_table")
         val time_cp_eep = measureTimeMillis {
             cp_eep_prune_table = Array<Array<Int>>(NUM_CP) { Array<Int>(NUM_E_EP) { -1 } }
             cp_eep_prune_table[0][0] = 0
             distance = 0
             num_filled = 1
-            while (num_filled != NUM_CP) {
+            while (num_filled != NUM_CP * NUM_E_EP) {
 //                if (num_filled % 100 == 0) {
-//                    Log.d("kotlintest", num_filled.toString())
+//                    //Log.d("kotlintest", num_filled.toString())
 //                }
                 for (i_cp in 0 until NUM_CP) {
                     for (i_eep in 0 until NUM_E_EP) {
@@ -228,7 +231,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                             for (i_move in 0 until move_names_ph2.size) {
                                 val next_cp = cp_move_table[i_cp][i_move]
                                 val next_eep = e_ep_move_table[i_eep][i_move]
-//                                Log.d("kotlintest", cp_eep_prune_table[next_cp][next_eep].toString())
+//                                //Log.d("kotlintest", "cp : $next_cp, eep : $next_eep")
                                 if (cp_eep_prune_table[next_cp][next_eep] == -1) {
                                     cp_eep_prune_table[next_cp][next_eep] = distance + 1
                                     num_filled += 1
@@ -240,14 +243,14 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                 distance += 1
             }
         }
-        Log.d("kotlintest", "cp_eep is $time_cp_eep")
-        Log.d("kotlintest", "start udep_eep_prune_table")
+        //Log.d("kotlintest", "cp_eep is $time_cp_eep")
+        //Log.d("kotlintest", "start udep_eep_prune_table")
         val time_udep_eep = measureTimeMillis {
             udep_eep_prune_table = Array<Array<Int>>(NUM_UD_EP) { Array<Int>(NUM_E_EP) { -1 } }
             udep_eep_prune_table[0][0] = 0
             distance = 0
             num_filled = 1
-            while (num_filled != NUM_UD_EP) {
+            while (num_filled != NUM_UD_EP * NUM_E_EP) {
                 for (i_udep in 0 until NUM_UD_EP) {
                     for (i_eep in 0 until NUM_E_EP) {
                         if (udep_eep_prune_table[i_udep][i_eep] == distance) {
@@ -265,8 +268,8 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
                 distance += 1
             }
         }
-        Log.d("kotlintest", "udep_eep is $time_udep_eep")
-        Log.d("kotlintest", "All Job Time = ${time_co + time_eo + time_e_comb + time_cp + time_ud_ep + time_e_ep + time_co_eec + time_eo_eec + time_cp_eep + time_udep_eep}")
+        //Log.d("kotlintest", "udep_eep is $time_udep_eep")
+        //Log.d("kotlintest", "All Job Time = ${time_co + time_eo + time_e_comb + time_cp + time_ud_ep + time_e_ep + time_co_eec + time_eo_eec + time_cp_eep + time_udep_eep}")
     }
 
     fun co_to_index(co: Array<Int>): Int {
@@ -437,7 +440,9 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         val prev_face = prev_move[0]
         val move_face = move[0]
         if (prev_face == move_face) return false
-        if (inv_face[prev_face] == move_face) return num_face[prev_face]!! < num_face[move_face]!!
+        if (inv_face[prev_face] == move_face) {
+            return num_face[prev_face]!! < num_face[move_face]!!
+        }
         return true
     }
 
@@ -498,7 +503,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         return false
     }
 
-    fun start_search(max_length: Int = 30): String {
+    fun start_search(max_length: Int = 30): List<String>? {
         max_solution_length = max_length
         var co_index = co_to_index(initial_state.co)
         var eo_index = eo_to_index(initial_state.eo)
@@ -513,11 +518,12 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         var depth = 0
         while (depth <= max_solution_length) {
             if (depth_limited_search_ph1(co_index, eo_index, e_comb_index, depth)) {
-                return " " + current_solution_ph1 + " . " + current_solution_ph2
+                val current_solution = current_solution_ph1 + current_solution_ph2
+                return current_solution
             }
             depth += 1
         }
-        return ""
+        return null
     }
 
     fun start_phase2(state: State): Boolean {

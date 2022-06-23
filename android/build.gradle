@@ -2,6 +2,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.android.application'
 //apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlinx-serialization'
 
 android {
     //buildToolsVersion "32.0.0"

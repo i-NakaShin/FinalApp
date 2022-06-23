@@ -16,7 +16,7 @@ class HomeFragment : AndroidFragmentApplication() {
 
     private lateinit var homeViewModel: HomeViewModel
 
-    private var fragmentCallback : Callbacks? = null
+    private var fragmentCallback: Callbacks? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -25,7 +25,8 @@ class HomeFragment : AndroidFragmentApplication() {
             fragmentCallback = context
         }
     }
-    suspend fun process(n: Int): Int{
+
+    suspend fun process(n: Int): Int {
         var num = n + 1
         delay(1000)
         return num
@@ -67,27 +68,25 @@ class HomeFragment : AndroidFragmentApplication() {
 //                arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 //        )
 
-        val moves_tmp = moves.keys.toSet()
-        for (k in moves_tmp) {
-            move_names += "$k ${k}2 ${k}' "
-            moves[k + '2'] = moves[k]!!.apply_move(moves[k]!!)
-            moves[k + '\''] = moves[k]!!.apply_move(moves[k]!!).apply_move(moves[k]!!)
-        }
-        val scramble = "R' U' F R' B' F2 L2 D' U' L2 F2 D' L2 D' R B D2 L D2 F2 U2 L R' U' F"
+//        val scramble = "R"
+//        val scramble = "R' U' F R' B' F2 L2 D' U' L2 F2 D' L2 D' R B D2 L D2 F2 U2 L R' U' F"
 //        val scramble = "U F2 D R' U2 R"
 //        val scramble = "R U R' F2 D2 L"
-        val scrambled_state = scramble2state(scramble)
-        val search = Search(scrambled_state, moves, move_names)
-//        val solution = search.start_search()
-//        if (!solution.isNullOrEmpty()) {
-//            Log.d("kotlintest", "Solution: $solution")
-//        } else {
-//            Log.d("kotlintest", "Solution not found.")
-//        }
+//        val scramble = "L D2 R U2 L F2 U2 L F2 R2 B2 R U' R' U2 F2 R' D B' F2"
+//        val scrambled_state = scramble2state(scramble)
+
+//        val search = Search(solved_state, moves, move_names)
 //        for (move_name in scramble.split(" ")) {
 //            var move_state = moves[move_name]
 //            scrambled_state = scrambled_state.apply_move(move_state!!)
 //        }
+//        var r_state = State(
+//                arrayOf(0, 2, 6, 3, 4, 1, 5, 7),
+//                arrayOf(0, 1, 2, 0, 0, 2, 1, 0),
+//                arrayOf(0, 5, 9, 3, 4, 2, 6, 7, 8, 1, 10, 11),
+//                arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+//        )
+//        val scrambled_state = r_state.apply_move(r_state)
 //        Log.d("kotlintest", scrambled_state.cp.contentToString())
 //        Log.d("kotlintest", scrambled_state.co.contentToString())
 //        Log.d("kotlintest", scrambled_state.ep.contentToString())
@@ -135,55 +134,4 @@ class HomeFragment : AndroidFragmentApplication() {
         return root
     }
 
-    fun scramble2state(scramble: String): State {
-        var scrambled_state = solved_state
-        for (move_name in scramble.split(" ")) {
-            val move_state = moves[move_name]
-            scrambled_state = scrambled_state.apply_move(move_state!!)
-        }
-        return scrambled_state
-    }
-
-    companion object {
-        val moves = mutableMapOf<String, State>(
-                "U" to State(arrayOf(3, 0, 1, 2, 4, 5, 6, 7),
-                             arrayOf(0, 0, 0, 0, 0, 0, 0, 0),
-                             arrayOf(0, 1, 2, 3, 7, 4, 5, 6, 8, 9, 10, 11),
-                             arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-
-                "D" to State(arrayOf(0, 1, 2, 3, 5, 6, 7, 4),
-                             arrayOf(0, 0, 0, 0, 0, 0, 0, 0),
-                             arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 8),
-                             arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-
-                "L" to State(arrayOf(4, 1, 2, 0, 7, 5, 6, 3),
-                             arrayOf(2, 0, 0, 1, 1, 0, 0, 2),
-                             arrayOf(11, 1, 2, 7, 4, 5, 6, 0, 8, 9, 10, 3),
-                             arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-
-                "R" to State(arrayOf(0, 2, 6, 3, 4, 1, 5, 7),
-                             arrayOf(0, 1, 2, 0, 0, 2, 1, 0),
-                             arrayOf(0, 5, 9, 3, 4, 2, 6, 7, 8, 1, 10, 11),
-                             arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-
-                "F" to State(arrayOf(0, 1, 3, 7, 4, 5, 2, 6),
-                             arrayOf(0, 0, 1, 2, 0, 0, 2, 1),
-                             arrayOf(0, 1, 6, 10, 4, 5, 3, 7, 8, 9, 2, 11),
-                             arrayOf(0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0)),
-
-                "B" to State(arrayOf(1, 5, 2, 3, 0, 4, 6, 7),
-                             arrayOf(1, 2, 0, 0, 2, 1, 0, 0),
-                             arrayOf(4, 8, 2, 3, 1, 5, 6, 7, 0, 9, 10, 11),
-                             arrayOf(1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)),
-        )
-
-        var solved_state = State(
-                arrayOf(0, 1, 2, 3, 4, 5, 6, 7),
-                arrayOf(0, 0, 0, 0, 0, 0, 0, 0),
-                arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
-                arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        )
-
-        var move_names = String()
-    }
 }
