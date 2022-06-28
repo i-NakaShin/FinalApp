@@ -66,11 +66,8 @@ class ImageRecognitionActivity : AndroidApplication() {
         okButton.setOnClickListener {
             if (side == 6) {
                 val intent = Intent(this, SolvingActivity::class.java)
-                val state = cubelet_to_state(cubelets)
-                if (state != null) {
-                    intent.putExtra("state", state)
-                    startActivity(intent)
-                }
+                intent.putExtra("cubelets", cubelets)
+                startActivity(intent)
             }
             isReflection = true
             okButton.isClickable = false
@@ -101,6 +98,10 @@ class ImageRecognitionActivity : AndroidApplication() {
         backButton.setOnClickListener {
             if (side >= 0) {
                 side--
+                val drawListener = CubeSolve(true, colorArray = cubelets, sidePosition = side)
+                val view: View = initializeForView(drawListener)
+                r.removeAllViews()
+                r.addView(view)
             }
         }
     }
@@ -303,91 +304,5 @@ class ImageRecognitionActivity : AndroidApplication() {
         }
 
         return PlainCubelet.CubeletColor.GRAY
-    }
-
-    fun cubelet_to_state(cubelet: Array<Array<Array<Cubelet?>>>): State? {
-        val default_cp = arrayOf(arrayOf(0, 2, 5), arrayOf(0, 5, 3), arrayOf(0, 3, 4), arrayOf(0, 4, 2),
-                         arrayOf(1, 5, 2), arrayOf(1, 3, 5), arrayOf(1, 4, 3), arrayOf(1, 2, 4))
-        val default_ep = arrayOf(arrayOf(5, 2), arrayOf(5, 3), arrayOf(4, 3), arrayOf(4, 2), arrayOf(0, 5), arrayOf(0, 3),
-                         arrayOf(0, 4), arrayOf(0, 2), arrayOf(1, 5), arrayOf(1, 3), arrayOf(1, 4), arrayOf(1, 2))
-        val faceList = mutableMapOf(0 to PlainCubelet.CubeletSide.TOP, 1 to PlainCubelet.CubeletSide.BOTTOM,
-                                    2 to PlainCubelet.CubeletSide.WEST, 3 to PlainCubelet.CubeletSide.EAST,
-                                    4 to PlainCubelet.CubeletSide.SOUTH, 5 to PlainCubelet.CubeletSide.NORTH)
-        val colorList = mutableMapOf(cubelet[1][2][1]!!.getColor(faceList[0]) to 0, cubelet[1][0][1]!!.getColor(faceList[1]) to 1,
-                                     cubelet[0][1][1]!!.getColor(faceList[2]) to 2, cubelet[2][1][1]!!.getColor(faceList[3]) to 3,
-                                     cubelet[1][1][2]!!.getColor(faceList[4]) to 4, cubelet[1][1][0]!!.getColor(faceList[5]) to 5)
-        var cp = Array<Int>(8){0}
-        var co = Array<Int>(8){0}
-        var ep = Array<Int>(12){0}
-        var eo = Array<Int>(12){0}
-        var c = Array<Array<Int>>(default_cp.size) { Array<Int>(default_cp[0].size) {0} }
-        var e = Array<Array<Int>>(default_ep.size) { Array<Int>(default_ep[0].size) {0} }
-
-        for (i in c.indices) {
-            for (j in c[i].indices) {
-                val x = (i + 1) / 2 % 2 * 2
-                val z = i / 2 % 2 * 2
-                if (i < c.size / 2) {
-                    c[i][j] = colorList[cubelet[x][2][z]!!.getColor(faceList[default_cp[i][j]])] ?: return null
-                } else {
-                    c[i][j] = colorList[cubelet[x][0][z]!!.getColor(faceList[default_cp[i][j]])] ?: return null
-                }
-            }
-        }
-
-        val e_num = arrayOf(1, 2, 1, 0)
-        for (i in e.indices) {
-            for (j in e[i].indices) {
-                var x = e_num[i % 4]
-                var z = e_num[3 - i % 4]
-                if (i < e.size / 3) {
-                    x = (i + 1) / 2 % 2 * 2
-                    z = i / 2 % 2 * 2
-                    e[i][j] = colorList[cubelet[x][1][z]!!.getColor(faceList[default_ep[i][j]])] ?: return null
-                } else if (i < e.size / 3 * 2) {
-                    e[i][j] = colorList[cubelet[x][2][z]!!.getColor(faceList[default_ep[i][j]])] ?: return null
-                } else {
-                    e[i][j] = colorList[cubelet[x][0][z]!!.getColor(faceList[default_ep[i][j]])] ?: return null
-                }
-            }
-        }
-
-        for (i in c.indices) {
-            val c_sorted = c[i].sorted()
-            var num = 0
-            for (j in default_cp.indices) {
-                val default_cp_sorted = default_cp[j].sorted()
-                for (k in default_cp[j].indices)
-                if (default_cp_sorted[k] != c_sorted[k]) {
-                    break
-                } else {
-                    if (c[i][k] == default_cp[j][0]) num = k
-                    if (k == 2) {
-                        cp[i] = j
-                        co[i] = num
-                    }
-                }
-            }
-        }
-
-        for (i in e.indices) {
-            val e_sorted = e[i].sorted()
-            var num = 0
-            for (j in default_ep.indices) {
-                val default_ep_sorted = default_ep[j].sorted()
-                for (k in default_ep[j].indices)
-                    if (default_ep_sorted[k] != e_sorted[k]) {
-                        break
-                    } else {
-                        if (e[i][k] == default_ep[j][0]) num = k
-                        if (k == 1) {
-                            ep[i] = j
-                            eo[i] = num
-                        }
-                    }
-            }
-        }
-
-        return State(cp, co, ep, eo)
     }
 }

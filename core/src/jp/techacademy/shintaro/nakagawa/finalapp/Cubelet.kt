@@ -1,12 +1,12 @@
 package jp.techacademy.shintaro.nakagawa.finalapp
 
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder
-
+import java.io.Serializable
 
 /**
  * Single piece of the rubik's cube
  */
-interface Cubelet {
+interface Cubelet: Serializable {
     /**
      * Draw the cubelet into the MeshBuilder
      *

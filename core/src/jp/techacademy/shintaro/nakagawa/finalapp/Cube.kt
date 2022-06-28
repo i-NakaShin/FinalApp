@@ -23,7 +23,9 @@ class Cube(
         val size: Int,
         private val isDetect: Boolean = false,
         private val isBack: Boolean = false,
+        private val isSolving: Boolean = false,
         private val colorArray: Array<Array<Array<Cubelet?>>>? = null,
+        private val solveArray: MutableList<Int> = mutableListOf(),
         val sidePosition: Int = -1): Disposable {
     private var cubelets: Array<Array<Array<Cubelet?>>>
     private var mesh: Mesh? = null
@@ -310,7 +312,84 @@ class Cube(
     }
 
     fun solving() {
-
+        for (i in solveArray.indices) {
+            val dec = solveArray[i] / 10
+            val milli = solveArray[i] % 10
+            when (dec) {
+                0 -> {
+                    when (milli) {
+                        0 -> {
+                            rotateRow(2)
+                            rotateRow(2)
+                            rotateRow(2)
+                        }
+                        1 -> {
+                            rotateRow(0)
+                            rotateRow(0)
+                            rotateRow(0)
+                        }
+                        2 -> rotateColumn(0)
+                        3 -> rotateColumn(2)
+                        4 -> {
+                            rotateFace(2)
+                            rotateFace(2)
+                            rotateFace(2)
+                        }
+                        5 -> {
+                            rotateFace(0)
+                            rotateFace(0)
+                            rotateFace(0)
+                        }
+                    }
+                }
+                1 -> {
+                    when (milli) {
+                        0 -> rotateRow(2)
+                        1 -> rotateRow(0)
+                        2 -> {
+                            rotateColumn(0)
+                            rotateColumn(0)
+                            rotateColumn(0)
+                        }
+                        3 -> {
+                            rotateColumn(2)
+                            rotateColumn(2)
+                            rotateColumn(2)
+                        }
+                        4 -> rotateFace(2)
+                        5 -> rotateFace(0)
+                    }
+                }
+                2 -> {
+                        when (milli) {
+                            0 -> {
+                                rotateRow(2)
+                                rotateRow(2)
+                            }
+                            1 -> {
+                                rotateRow(0)
+                                rotateRow(0)
+                            }
+                            2 -> {
+                                rotateColumn(0)
+                                rotateColumn(0)
+                            }
+                            3 -> {
+                                rotateColumn(2)
+                                rotateColumn(2)
+                            }
+                            4 -> {
+                                rotateFace(2)
+                                rotateFace(2)
+                            }
+                            5 -> {
+                                rotateFace(0)
+                                rotateFace(0)
+                            }
+                        }
+                }
+            }
+        }
     }
 
     /**
@@ -324,7 +403,7 @@ class Cube(
         cubeletTexture = Texture(Gdx.files.internal("cubelet.png"))
         cubeMaterial = Material(ColorAttribute.createSpecular(Color.WHITE),
                 TextureAttribute.createDiffuse(cubeletTexture))
-        if (!isDetect) {
+        if (!isDetect && !isSolving) {
             fillWithDefault()
         } else {
             cubelets = colorArray!!
@@ -390,6 +469,8 @@ class Cube(
         }
         rerenderCube()
     }
+
+
 
 //    fun co_to_index(co: Array<Int>): Int {
 //        var index = 0

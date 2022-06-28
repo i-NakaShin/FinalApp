@@ -21,7 +21,9 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
  */
 class CubeSolve(private val isDetect: Boolean = false,
                 private val isBack: Boolean = false,
+                private val isSolving: Boolean = false,
                 private val colorArray: Array<Array<Array<Cubelet?>>>? = null,
+                private val solveArray: MutableList<Int> = mutableListOf(),
                 val sidePosition: Int = -1) : ApplicationListener {
     private var environment: Environment? = null
     private var hudCam: OrthographicCamera? = null
@@ -46,7 +48,8 @@ class CubeSolve(private val isDetect: Boolean = false,
         environment!!.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, 1f, 1f, 1f))
         environment!!.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -1f, -1f))
         modelBatch = ModelBatch()
-        cube = Cube(3, isDetect, colorArray = colorArray, sidePosition = sidePosition)
+        cube = Cube(3, isDetect,isSolving = isSolving, colorArray = colorArray, sidePosition = sidePosition, solveArray = solveArray)
+        cube!!.solving()
         cam = PerspectiveCamera(67f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         cam!!.position[13f, 13f] = 13f
         cam!!.lookAt(0f, 0f, 0f)
@@ -93,6 +96,12 @@ class CubeSolve(private val isDetect: Boolean = false,
                         cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 270f) }
             }
         }
+        if (isSolving) {
+            cam!!.position[0f, 20f] = 0f
+            cam!!.lookAt(0f, 0f, 0f)
+            cam!!.rotate(-45f, 0f, 1f, 0f)
+            cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -45f)
+        }
         cam!!.near = 1f
         cam!!.far = 300f
         cam!!.update()
@@ -114,42 +123,42 @@ class CubeSolve(private val isDetect: Boolean = false,
     }
 
     override fun render() {
-        hudBatch?.let {
-            it.projectionMatrix = hudCam!!.combined
-        }
-        hudBatch!!.projectionMatrix = hudCam!!.combined
-        camController!!.update()
+        hudBatch?.let { it.projectionMatrix = hudCam!!.combined }
+        camController?.let { it.update() }
 //        updateFpsCache()
         Gdx.gl.glClearColor(0.2f,
                 if (solved) 0.2f + (1 + Math.sin((System.currentTimeMillis() % 6282 / 200.0f).toDouble()).toFloat()) * 0.05f else 0.2f,
                 0.2f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
-        modelBatch!!.begin(cam)
-        cube!!.render(modelBatch!!, environment)
-        modelBatch!!.end()
-        hudBatch!!.begin()
-//        fpsCache!!.draw(hudBatch)
-        if (Gdx.app.type == Application.ApplicationType.Desktop || Gdx.app.type == Application.ApplicationType.WebGL) {
-//            controlsCache?.draw(hudBatch)
+        modelBatch?.let { it.begin(cam) }
+        cube?.let { it.render(modelBatch!!, environment) }
+        modelBatch?.let { it.end() }
+        hudBatch?.let {
+            it.begin()
+            //        fpsCache!!.draw(hudBatch)
+            if (Gdx.app.type == Application.ApplicationType.Desktop || Gdx.app.type == Application.ApplicationType.WebGL) {
+                //            controlsCache?.draw(hudBatch)
+            }
+            it.end()
         }
-        hudBatch!!.end()
     }
 
     override fun dispose() {
-        modelBatch!!.dispose()
-        cube!!.dispose()
+        modelBatch?.let { it.dispose() }
+        cube?.let { it.dispose() }
     }
 
     override fun resize(width: Int, height: Int) {
-        cam!!.apply {
-            viewportHeight = width.toFloat()
+        cam?.let {
+            it.viewportWidth = width.toFloat()
+            it.viewportHeight = height.toFloat()
+            it.update()
         }
-        cam!!.viewportWidth = width.toFloat()
-        cam!!.viewportHeight = height.toFloat()
-        cam!!.update()
-        hudCam!!.setToOrtho(false, width.toFloat(), height.toFloat())
-        hudCam!!.update()
-        hudBatch!!.projectionMatrix = hudCam!!.combined
+        hudCam?.let {
+            it.setToOrtho(false, width.toFloat(), height.toFloat())
+            it.update()
+        }
+        hudBatch?.let { it.projectionMatrix = hudCam!!.combined }
         if (Gdx.app.type == Application.ApplicationType.Desktop || Gdx.app.type == Application.ApplicationType.WebGL) {
             createControlsCache()
         }
