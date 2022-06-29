@@ -1,6 +1,7 @@
 package jp.techacademy.shintaro.nakagawa.finalapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -44,7 +45,7 @@ class SolvingActivity : AppCompatActivity() {
 
         val prevButton: Button = findViewById(R.id.prev_button)
         val nextButton: Button = findViewById(R.id.next_button)
-//        val r: RelativeLayout = findViewById(R.id.solving_gdx_view)
+        val homeButton: Button = findViewById(R.id.homeButoon)
 
         val solutionList: ListView = findViewById(R.id.symbol_list)
         var data = mutableListOf<String>()
@@ -65,14 +66,14 @@ class SolvingActivity : AppCompatActivity() {
                 for (i in solution.indices) {
                     var symbol = ""
                     if (solution[i].length == 1) {
-                        symbol = "  ：センター色が${faceColor[symbolList[solution[i][0]]!!]}の面を${description[0]}"
+                        symbol = "  ：真ん中が${faceColor[symbolList[solution[i][0]]!!]}の面を${description[0]}"
                         solveArray.add(symbolList[solution[i][0]]!!)
                     } else {
                         if (solution[i][1] == '\'') {
-                            symbol = " ：センター色が${faceColor[symbolList[solution[i][0]]!!]}の面を${description[1]}"
+                            symbol = " ：真ん中が${faceColor[symbolList[solution[i][0]]!!]}の面を${description[1]}"
                             solveArray.add(symbolList[solution[i][0]]!! + 10)
                         } else {
-                            symbol = "：センター色が${faceColor[symbolList[solution[i][0]]!!]}の面を${description[2]}"
+                            symbol = "：真ん中が${faceColor[symbolList[solution[i][0]]!!]}の面を${description[2]}"
                             solveArray.add(symbolList[solution[i][0]]!! + 20)
                         }
                     }
@@ -128,6 +129,10 @@ class SolvingActivity : AppCompatActivity() {
 //                r.removeAllViews()
 //                r.addView(view)
             }
+        }
+        homeButton.setOnClickListener {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
         }
     }
 

@@ -96,7 +96,11 @@ class ImageRecognitionActivity : AndroidApplication() {
 
         val backButton: Button = findViewById(R.id.back_button)
         backButton.setOnClickListener {
-            if (side >= 0) {
+            if (side == 0) {
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+            }
+            if (side > 0) {
                 side--
                 val drawListener = CubeSolve(true, colorArray = cubelets, sidePosition = side)
                 val view: View = initializeForView(drawListener)
