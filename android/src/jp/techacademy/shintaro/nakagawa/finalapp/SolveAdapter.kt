@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 
-class SolveAdapter(val context: Context, val solutionList: MutableList<String>, var num: Int): BaseAdapter() {
+class SolveAdapter(val context: Context, val solutionList: MutableList<String>, var num: Int) : BaseAdapter() {
     val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getCount(): Int {
@@ -33,7 +33,7 @@ class SolveAdapter(val context: Context, val solutionList: MutableList<String>, 
             symboltext.setTextColor(Color.GREEN)
         } else if (num == 0 || num == solutionList.size - 1) {
             symboltext.setTextColor(Color.WHITE)
-        } else if (position == num){
+        } else if (position == num) {
             symboltext.setTextColor(Color.WHITE)
         }
 

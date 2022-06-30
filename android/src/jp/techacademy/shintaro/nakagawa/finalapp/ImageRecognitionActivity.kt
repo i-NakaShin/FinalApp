@@ -42,7 +42,6 @@ class ImageRecognitionActivity : AndroidApplication() {
         for (i in cubelets!!.indices) {
             for (j in cubelets[0].indices) {
                 for (k in cubelets[0][0].indices) {
-                    // Don't add cubelets that are internal
                     if (i > 0 && i < cubelets.size - 1
                             && j > 0 && j < cubelets.size - 1
                             && k > 0 && k < cubelets.size - 1) continue
@@ -71,7 +70,6 @@ class ImageRecognitionActivity : AndroidApplication() {
             }
             isReflection = true
             okButton.isClickable = false
-//            Log.d("kotlintest", "sidePosition : " + side.toString())
 
             val drawListener = CubeSolve(true, colorArray = cubelets, sidePosition = side)
             val view: View = initializeForView(drawListener)
@@ -83,7 +81,6 @@ class ImageRecognitionActivity : AndroidApplication() {
                     Thread.sleep(800)
                     if (side < 6) {
                         side++
-//                        Log.d("kotlintest", "clickPosition : " + side.toString())
                     }
                     isReflection = false
                     okButton.isClickable = true
@@ -153,9 +150,7 @@ class ImageRecognitionActivity : AndroidApplication() {
             override fun onCameraViewStopped() {}
 
             override fun onCameraFrame(inputFrame: CameraBridgeViewBase.CvCameraViewFrame?): Mat {
-                // このメソッド内で画像処理. 今回はポジネガ反転.
                 val mat = requireNotNull(inputFrame).rgba()
-//                Core.bitwise_not(mat, mat)
 
                 if (!isReflection) {
                     scanFrame(mat)
@@ -206,7 +201,6 @@ class ImageRecognitionActivity : AndroidApplication() {
                 pt11, pt12,
                 pt8, pt13,
                 pt9, pt14)
-//        val color_list = listOf(Scalar(), red, blue, green, yellow, orange)
 
         for (i in 0 until 18 step 2) {
             when (side) {
@@ -242,18 +236,6 @@ class ImageRecognitionActivity : AndroidApplication() {
                 }
             }
         }
-
-//        detectColor(mat, point_list[0], point_list[1])
-
-        val squareMat = Mat(mat, Rect(pt1, pt2))
-
-
-//        cvtColor(mat, mat, COLOR_RGBA2BGR)
-//        cvtColor(mat, mat, COLOR_BGR2HSV)
-//        Core.inRange(mat, Scalar(90.0, 70.0, 70.0), Scalar(110.0, 255.0, 255.0), mat)
-
-
-//        cvtColor(mat, mat, COLOR_GRAY2BGR)
     }
 
     private fun detectColor(mat: Mat, pt1: Point, pt2: Point): PlainCubelet.CubeletColor {
@@ -278,13 +260,9 @@ class ImageRecognitionActivity : AndroidApplication() {
                 PlainCubelet.CubeletColor.YELLOW,
                 PlainCubelet.CubeletColor.ORANGE)
 
-//        Log.d("native", mat.nativeObj.toString())
         rectangle(mat, pt1, pt2, frameColor, 2)
         cvtColor(squareMat, squareMat, COLOR_RGBA2BGR)
         cvtColor(squareMat, squareMat, COLOR_BGR2HSV)
-
-//        val return_buff = ByteArray((squareMat.total() * squareMat.channels()).toInt())
-//        squareMat[0, 0, return_buff]
 
         var max_color = 0.0
         var color_num = -1
@@ -302,7 +280,6 @@ class ImageRecognitionActivity : AndroidApplication() {
             }
         }
         if (color_num != -1 && max_color >= 30) {
-//            Log.d("kotlintest", "${colorName_list[color_num]} Area [%] : $max_color")
             rectangle(mat, pt1, Point(pt1.x + 30.0, pt1.y + 30.0), fillColor[color_num], -1)
             return colorName_list[color_num]
         }

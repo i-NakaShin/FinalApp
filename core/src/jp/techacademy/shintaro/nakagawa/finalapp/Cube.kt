@@ -12,21 +12,14 @@ import com.badlogic.gdx.utils.Disposable
 import java.util.*
 import kotlin.collections.ArrayList
 
-
-/**
- * Rubik's cube containing multiple cubelets
- */
 class Cube(
-        /**
-         * @return Number of rows in the cube
-         */
         val size: Int,
         private val isDetect: Boolean = false,
         private val isBack: Boolean = false,
         private val isSolving: Boolean = false,
         private val colorArray: Array<Array<Array<Cubelet?>>>? = null,
         private val solveArray: MutableList<Int> = mutableListOf(),
-        val sidePosition: Int = -1): Disposable {
+        val sidePosition: Int = -1) : Disposable {
     private var cubelets: Array<Array<Array<Cubelet?>>>
     private var mesh: Mesh? = null
     private var model: Model? = null
@@ -36,42 +29,14 @@ class Cube(
     private val cubeletTexture: Texture
     private val cubeMaterial: Material
 
-    /**
-     * Get the cubelet at the specified position
-     *
-     * @param x X position of the cubelet
-     * @param y Y position of the cubelet
-     * @param z Z position of the cubelet
-     *
-     * @return Cubelet at the position
-     */
     fun getCubelet(x: Int, y: Int, z: Int): Cubelet? {
         return cubelets[x][y][z]
     }
 
-    /**
-     * Render the cube to the ModelBatch
-     *
-     * @param batch ModelBatch to render to
-     * @param environment Environment to render with
-     */
     fun render(batch: ModelBatch, environment: Environment?) {
         batch.render(modelInstance, environment)
-    }// Check top
-    // Check bottom
+    }
 
-    // Check south
-    // Check north
-
-    // Check west
-    // Check east
-
-    // None of the side checks failed
-    /**
-     * Calculates whether to cube is solved
-     *
-     * @return Whether all of the sides are of only one color
-     */
     val isSolved: Boolean
         get() {
             // Check top
@@ -123,10 +88,6 @@ class Cube(
             return true
         }
 
-    /**
-     * Rotate a column tall-wise counter-clockwise
-     * @param row Row (x) to rotate
-     */
     fun rotateColumn(row: Int, reverse: Boolean = false) {
         var cubelets_tmp = Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) }
         for (y in 0 until size) {
@@ -145,10 +106,6 @@ class Cube(
         if (!disableAutoRerender) rerenderCube()
     }
 
-    /**
-     * Rotate a row wide-wise counter-clockwise
-     * @param row Row (y) to rotate
-     */
     fun rotateRow(row: Int, reverse: Boolean = false) {
         var cubelets_tmp = Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) }
         for (x in 0 until size) {
@@ -171,10 +128,6 @@ class Cube(
         if (!disableAutoRerender) rerenderCube()
     }
 
-    /**
-     * Rotate a face depth-wise counter-clockwise
-     * @param row Row (z) to rotate
-     */
     fun rotateFace(row: Int, reverse: Boolean = false) {
         var cubelets_tmp = Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) }
         for (x in 0 until size) {
@@ -197,9 +150,6 @@ class Cube(
         if (!disableAutoRerender) rerenderCube()
     }
 
-    /**
-     * Reset the cube to its default state
-     */
     fun reset() {
         if (!isDetect) {
             fillWithDefault()
@@ -209,9 +159,6 @@ class Cube(
         rerenderCube()
     }
 
-    /**
-     * Shuffle the cube
-     */
     fun shuffle(rng: Random) {
         disableAutoRerender = true
         for (iter in 0..99) {
@@ -240,12 +187,7 @@ class Cube(
         cubeletTexture.dispose()
     }
 
-    /**
-     * Rerender the cube with its current status
-     */
     private fun rerenderCube() {
-//        if (mesh != null) mesh!!.dispose()
-//        if (model != null) model!!.dispose()
         modelBuilder.begin()
         val builder = MeshBuilder()
         val startX: Float
@@ -273,7 +215,6 @@ class Cube(
         for (i in cubelets.indices) {
             for (j in 0 until cubelets[0].size) {
                 for (k in 0 until cubelets[0][0].size) {
-                    // Don't add cubelets that are internal
                     if (i > 0 && i < cubelets.size - 1
                             && j > 0 && j < cubelets.size - 1
                             && k > 0 && k < cubelets.size - 1) continue
@@ -294,7 +235,6 @@ class Cube(
         for (i in cubelets.indices) {
             for (j in 0 until cubelets[0].size) {
                 for (k in 0 until cubelets[0][0].size) {
-                    // Don't add cubelets that are internal
                     if (i > 0 && i < cubelets.size - 1
                             && j > 0 && j < cubelets.size - 1
                             && k > 0 && k < cubelets.size - 1) continue
@@ -361,42 +301,37 @@ class Cube(
                     }
                 }
                 2 -> {
-                        when (milli) {
-                            0 -> {
-                                rotateRow(2)
-                                rotateRow(2)
-                            }
-                            1 -> {
-                                rotateRow(0)
-                                rotateRow(0)
-                            }
-                            2 -> {
-                                rotateColumn(0)
-                                rotateColumn(0)
-                            }
-                            3 -> {
-                                rotateColumn(2)
-                                rotateColumn(2)
-                            }
-                            4 -> {
-                                rotateFace(2)
-                                rotateFace(2)
-                            }
-                            5 -> {
-                                rotateFace(0)
-                                rotateFace(0)
-                            }
+                    when (milli) {
+                        0 -> {
+                            rotateRow(2)
+                            rotateRow(2)
                         }
+                        1 -> {
+                            rotateRow(0)
+                            rotateRow(0)
+                        }
+                        2 -> {
+                            rotateColumn(0)
+                            rotateColumn(0)
+                        }
+                        3 -> {
+                            rotateColumn(2)
+                            rotateColumn(2)
+                        }
+                        4 -> {
+                            rotateFace(2)
+                            rotateFace(2)
+                        }
+                        5 -> {
+                            rotateFace(0)
+                            rotateFace(0)
+                        }
+                    }
                 }
             }
         }
     }
 
-    /**
-     * Creates a Rubik's cube with the default configuration
-     *
-     * @param size Number of rows for the cube to have
-     */
     init {
         cubelets = Array<Array<Array<Cubelet?>>>(size) { Array<Array<Cubelet?>>(size) { arrayOfNulls<Cubelet>(size) } }
         modelBuilder = ModelBuilder()
@@ -469,40 +404,4 @@ class Cube(
         }
         rerenderCube()
     }
-
-
-
-//    fun co_to_index(co: Array<Int>): Int {
-//        var index = 0
-//        for (co_i in 0 until co.size-1) {
-//            index *= 3
-//            index += co[co_i]
-//        }
-//        return index
-//    }
-//
-//    fun index_to_co(index: Int): Array<Int> {
-//        var co = Array<Int>(8){0}
-//        var sum_co = 0
-//        for(i in co.size downTo -1) {
-//            co[i] = index % 3
-//            index /= 3
-//        }
-//
-//        return co
-//    }
-//
-//    companion object {
-//        val NUM_CORNERS = 8
-//        val NUM_EDGES = 12
-//
-//        val NUM_CO = 2187  // 3 ** 7
-//        val NUM_EO = 2048  // 2 ** 11
-//        val NUM_E_COMBINATIONS = 495  // 12C4
-//
-//        val NUM_CP = 40320  // 8!
-////        val NUM_EP = 479001600  // 12! # これは使わない
-//        val NUM_UD_EP = 40320  // 8!
-//        val NUM_E_EP = 24  // 4!
-//    }
 }

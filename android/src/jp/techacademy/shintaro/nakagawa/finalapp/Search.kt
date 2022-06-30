@@ -56,220 +56,171 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         for ((i, move_name) in move_names_ph2.withIndex()) {
             move_names_to_index_ph2[move_name] = i
         }
-        //Log.d("kotlintest", "start co_move_table")
-        val time_co = measureTimeMillis {
-            co_move_table = Array<Array<Int>>(NUM_CO) { Array<Int>(move_namesList.size) { 0 } }
-            for (i in 0 until NUM_CO) {
-                var state = State(
-                        Array<Int>(8) { 0 },
-                        index_to_co(i),
-                        Array<Int>(12) { 0 },
-                        Array<Int>(12) { 0 }
-                )
+        co_move_table = Array<Array<Int>>(NUM_CO) { Array<Int>(move_namesList.size) { 0 } }
+        for (i in 0 until NUM_CO) {
+            var state = State(
+                    Array<Int>(8) { 0 },
+                    index_to_co(i),
+                    Array<Int>(12) { 0 },
+                    Array<Int>(12) { 0 }
+            )
 
-                for (i_move in 0 until move_namesList.size) {
-                    var new_state = state.apply_move(moves[move_namesList[i_move]]!!)
-                    co_move_table[i][i_move] = co_to_index(new_state.co)
-                }
+            for (i_move in 0 until move_namesList.size) {
+                var new_state = state.apply_move(moves[move_namesList[i_move]]!!)
+                co_move_table[i][i_move] = co_to_index(new_state.co)
             }
         }
-        //Log.d("kotlintest", "co is $time_co")
-        //Log.d("kotlintest", "start eo_move_table")
-        val time_eo = measureTimeMillis {
-            eo_move_table = Array<Array<Int>>(NUM_EO) { Array<Int>(move_namesList.size) { 0 } }
-            for (i in 0 until NUM_EO) {
-                var state = State(
-                        Array<Int>(8) { 0 },
-                        Array<Int>(8) { 0 },
-                        Array<Int>(12) { 0 },
-                        index_to_eo(i)
-                )
-                for (i_move in 0 until move_namesList.size) {
-                    var new_state = state.apply_move(moves[move_namesList[i_move]]!!)
-                    eo_move_table[i][i_move] = eo_to_index(new_state.eo)
-                }
+        eo_move_table = Array<Array<Int>>(NUM_EO) { Array<Int>(move_namesList.size) { 0 } }
+        for (i in 0 until NUM_EO) {
+            var state = State(
+                    Array<Int>(8) { 0 },
+                    Array<Int>(8) { 0 },
+                    Array<Int>(12) { 0 },
+                    index_to_eo(i)
+            )
+            for (i_move in 0 until move_namesList.size) {
+                var new_state = state.apply_move(moves[move_namesList[i_move]]!!)
+                eo_move_table[i][i_move] = eo_to_index(new_state.eo)
             }
         }
-        //Log.d("kotlintest", "eo is $time_eo")
-        //Log.d("kotlintest", "start e_combination_table")
-        val time_e_comb = measureTimeMillis {
-            e_combination_table = Array<Array<Int>>(NUM_E_COMBINATIONS) { Array<Int>(move_namesList.size) { 0 } }
-            for (i in 0 until NUM_E_COMBINATIONS) {
-                var state = State(
-                        Array<Int>(8) { 0 },
-                        Array<Int>(8) { 0 },
-                        index_to_e_combination(i),
-                        Array<Int>(12) { 0 }
-                )
-                for (i_move in 0 until move_namesList.size) {
-                    var new_state = state.apply_move(moves[move_namesList[i_move]]!!)
-                    e_combination_table[i][i_move] = e_combination_to_index(new_state.ep)
-                }
+        e_combination_table = Array<Array<Int>>(NUM_E_COMBINATIONS) { Array<Int>(move_namesList.size) { 0 } }
+        for (i in 0 until NUM_E_COMBINATIONS) {
+            var state = State(
+                    Array<Int>(8) { 0 },
+                    Array<Int>(8) { 0 },
+                    index_to_e_combination(i),
+                    Array<Int>(12) { 0 }
+            )
+            for (i_move in 0 until move_namesList.size) {
+                var new_state = state.apply_move(moves[move_namesList[i_move]]!!)
+                e_combination_table[i][i_move] = e_combination_to_index(new_state.ep)
             }
         }
-        //Log.d("kotlintest", "e_comb is $time_e_comb")
-        //Log.d("kotlintest", "start cp_move_table")
-        val time_cp = measureTimeMillis {
-            cp_move_table = Array<Array<Int>>(NUM_CP) { Array<Int>(move_names_ph2.size) { 0 } }
-            for (i in 0 until NUM_CP) {
-                var state = State(
-                        index_to_cp(i),
-                        Array<Int>(8) { 0 },
-                        Array<Int>(12) { 0 },
-                        Array<Int>(12) { 0 }
-                )
-                for (i_move in 0 until move_names_ph2.size) {
-                    var new_state = state.apply_move(moves[move_names_ph2[i_move]]!!)
-                    cp_move_table[i][i_move] = cp_to_index(new_state.cp)
-                }
+        cp_move_table = Array<Array<Int>>(NUM_CP) { Array<Int>(move_names_ph2.size) { 0 } }
+        for (i in 0 until NUM_CP) {
+            var state = State(
+                    index_to_cp(i),
+                    Array<Int>(8) { 0 },
+                    Array<Int>(12) { 0 },
+                    Array<Int>(12) { 0 }
+            )
+            for (i_move in 0 until move_names_ph2.size) {
+                var new_state = state.apply_move(moves[move_names_ph2[i_move]]!!)
+                cp_move_table[i][i_move] = cp_to_index(new_state.cp)
             }
         }
-        //Log.d("kotlintest", "cp is $time_cp")
-        //Log.d("kotlintest", "start ud_ep_move_table")
-        val time_ud_ep = measureTimeMillis {
-            ud_ep_move_table = Array<Array<Int>>(NUM_UD_EP) { Array<Int>(move_names_ph2.size) { 0 } }
-            for (i in 0 until NUM_UD_EP) {
-                var ep = mutableListOf<Int>(0, 0, 0, 0)
-                ep.addAll(index_to_ud_ep(i))
-//                //Log.d("kotlintest", "ep = " + ep.stream().toArray { arrayOfNulls<Int>(it) }.contentToString())
-                var state = State(
-                        Array<Int>(8) { 0 },
-                        Array<Int>(8) { 0 },
-                        ep.stream().toArray { arrayOfNulls<Int>(it) },
-                        Array<Int>(12) { 0 }
-                )
-                for (i_move in move_names_ph2.indices) {
-                    var new_state = state.apply_move(moves[move_names_ph2[i_move]]!!)
-                    ud_ep_move_table[i][i_move] = ud_ep_to_index(new_state.ep.slice(4 until new_state.ep.size).stream().toArray { arrayOfNulls<Int>(it) })
-                }
+        ud_ep_move_table = Array<Array<Int>>(NUM_UD_EP) { Array<Int>(move_names_ph2.size) { 0 } }
+        for (i in 0 until NUM_UD_EP) {
+            var ep = mutableListOf<Int>(0, 0, 0, 0)
+            ep.addAll(index_to_ud_ep(i))
+            var state = State(
+                    Array<Int>(8) { 0 },
+                    Array<Int>(8) { 0 },
+                    ep.stream().toArray { arrayOfNulls<Int>(it) },
+                    Array<Int>(12) { 0 }
+            )
+            for (i_move in move_names_ph2.indices) {
+                var new_state = state.apply_move(moves[move_names_ph2[i_move]]!!)
+                ud_ep_move_table[i][i_move] = ud_ep_to_index(new_state.ep.slice(4 until new_state.ep.size).stream().toArray { arrayOfNulls<Int>(it) })
             }
         }
-        //Log.d("kotlintest", "ud_ep is $time_ud_ep")
-        //Log.d("kotlintest", "start e_ep_move_table")
-        val time_e_ep = measureTimeMillis {
-            e_ep_move_table = Array<Array<Int>>(NUM_E_EP) { Array<Int>(move_names_ph2.size) { 0 } }
-            for (i in 0 until NUM_E_EP) {
-                var ep = index_to_e_ep(i).toMutableList()
-                ep.addAll(listOf(0, 0, 0, 0, 0, 0, 0, 0))
-                //Log.d("kotlintest", ep.stream().toArray { arrayOfNulls<Int>(it) }.contentToString())
-                var state = State(
-                        Array<Int>(8) { 0 },
-                        Array<Int>(8) { 0 },
-                        ep.stream().toArray { arrayOfNulls<Int>(it) },
-                        Array<Int>(12) { 0 }
-                )
-                for (i_move in move_names_ph2.indices) {
-                    var new_state = state.apply_move(moves[move_names_ph2[i_move]]!!)
-                    e_ep_move_table[i][i_move] = e_ep_to_index(new_state.ep.slice(0 until 4).stream().toArray { arrayOfNulls<Int>(it) })
-//                    //Log.d("kotlintest", e_ep_move_table[i][i_move].toString())
-                }
+        e_ep_move_table = Array<Array<Int>>(NUM_E_EP) { Array<Int>(move_names_ph2.size) { 0 } }
+        for (i in 0 until NUM_E_EP) {
+            var ep = index_to_e_ep(i).toMutableList()
+            ep.addAll(listOf(0, 0, 0, 0, 0, 0, 0, 0))
+            var state = State(
+                    Array<Int>(8) { 0 },
+                    Array<Int>(8) { 0 },
+                    ep.stream().toArray { arrayOfNulls<Int>(it) },
+                    Array<Int>(12) { 0 }
+            )
+            for (i_move in move_names_ph2.indices) {
+                var new_state = state.apply_move(moves[move_names_ph2[i_move]]!!)
+                e_ep_move_table[i][i_move] = e_ep_to_index(new_state.ep.slice(0 until 4).stream().toArray { arrayOfNulls<Int>(it) })
             }
         }
-        //Log.d("kotlintest", "e_ep is $time_e_ep")
-        //Log.d("kotlintest", "start co_eec_prune_table")
-        val time_co_eec = measureTimeMillis {
-            co_eec_prune_table = Array<Array<Int>>(NUM_CO) { Array<Int>(NUM_E_COMBINATIONS) { -1 } }
-            co_eec_prune_table[0][0] = 0
-            while (num_filled != NUM_CO * NUM_E_COMBINATIONS) {
-                for (i_co in 0 until NUM_CO) {
-                    for (i_eec in 0 until NUM_E_COMBINATIONS) {
-                        if (co_eec_prune_table[i_co][i_eec] == distance) {
-                            for (i_move in 0 until move_namesList.size) {
-                                val next_co = co_move_table[i_co][i_move]
-                                val next_eec = e_combination_table[i_eec][i_move]
-//                                //Log.d("kotlintest", "co : $next_co, eec : $next_eec")
-                                if (co_eec_prune_table[next_co][next_eec] == -1) {
-                                    co_eec_prune_table[next_co][next_eec] = distance + 1
-                                    num_filled += 1
-                                }
+        co_eec_prune_table = Array<Array<Int>>(NUM_CO) { Array<Int>(NUM_E_COMBINATIONS) { -1 } }
+        co_eec_prune_table[0][0] = 0
+        while (num_filled != NUM_CO * NUM_E_COMBINATIONS) {
+            for (i_co in 0 until NUM_CO) {
+                for (i_eec in 0 until NUM_E_COMBINATIONS) {
+                    if (co_eec_prune_table[i_co][i_eec] == distance) {
+                        for (i_move in 0 until move_namesList.size) {
+                            val next_co = co_move_table[i_co][i_move]
+                            val next_eec = e_combination_table[i_eec][i_move]
+                            if (co_eec_prune_table[next_co][next_eec] == -1) {
+                                co_eec_prune_table[next_co][next_eec] = distance + 1
+                                num_filled += 1
                             }
                         }
                     }
                 }
-                distance += 1
             }
+            distance += 1
         }
-        //Log.d("kotlintest", "co_eec is $time_co_eec")
-        //Log.d("kotlintest", "start eo_eec_prune_table")
-        val time_eo_eec = measureTimeMillis {
-            eo_eec_prune_table = Array<Array<Int>>(NUM_EO) { Array<Int>(NUM_E_COMBINATIONS) { -1 } }
-            eo_eec_prune_table[0][0] = 0
-            distance = 0
-            num_filled = 1
-            while (num_filled != NUM_EO * NUM_E_COMBINATIONS) {
-                for (i_eo in 0 until NUM_EO) {
-                    for (i_eec in 0 until NUM_E_COMBINATIONS) {
-                        if (eo_eec_prune_table[i_eo][i_eec] == distance) {
-                            for (i_move in 0 until move_namesList.size) {
-                                val next_eo = eo_move_table[i_eo][i_move]
-                                val next_eec = e_combination_table[i_eec][i_move]
-                                if (eo_eec_prune_table[next_eo][next_eec] == -1) {
-                                    eo_eec_prune_table[next_eo][next_eec] = distance + 1
-                                    num_filled += 1
-                                }
+        eo_eec_prune_table = Array<Array<Int>>(NUM_EO) { Array<Int>(NUM_E_COMBINATIONS) { -1 } }
+        eo_eec_prune_table[0][0] = 0
+        distance = 0
+        num_filled = 1
+        while (num_filled != NUM_EO * NUM_E_COMBINATIONS) {
+            for (i_eo in 0 until NUM_EO) {
+                for (i_eec in 0 until NUM_E_COMBINATIONS) {
+                    if (eo_eec_prune_table[i_eo][i_eec] == distance) {
+                        for (i_move in 0 until move_namesList.size) {
+                            val next_eo = eo_move_table[i_eo][i_move]
+                            val next_eec = e_combination_table[i_eec][i_move]
+                            if (eo_eec_prune_table[next_eo][next_eec] == -1) {
+                                eo_eec_prune_table[next_eo][next_eec] = distance + 1
+                                num_filled += 1
                             }
                         }
                     }
                 }
-                distance += 1
             }
+            distance += 1
         }
-        //Log.d("kotlintest", "eo_eec is $time_eo_eec")
-        //Log.d("kotlintest", "start cp_eep_prune_table")
-        val time_cp_eep = measureTimeMillis {
-            cp_eep_prune_table = Array<Array<Int>>(NUM_CP) { Array<Int>(NUM_E_EP) { -1 } }
-            cp_eep_prune_table[0][0] = 0
-            distance = 0
-            num_filled = 1
-            while (num_filled != NUM_CP * NUM_E_EP) {
-//                if (num_filled % 100 == 0) {
-//                    //Log.d("kotlintest", num_filled.toString())
-//                }
-                for (i_cp in 0 until NUM_CP) {
-                    for (i_eep in 0 until NUM_E_EP) {
-                        if (cp_eep_prune_table[i_cp][i_eep] == distance) {
-                            for (i_move in 0 until move_names_ph2.size) {
-                                val next_cp = cp_move_table[i_cp][i_move]
-                                val next_eep = e_ep_move_table[i_eep][i_move]
-//                                //Log.d("kotlintest", "cp : $next_cp, eep : $next_eep")
-                                if (cp_eep_prune_table[next_cp][next_eep] == -1) {
-                                    cp_eep_prune_table[next_cp][next_eep] = distance + 1
-                                    num_filled += 1
-                                }
+        cp_eep_prune_table = Array<Array<Int>>(NUM_CP) { Array<Int>(NUM_E_EP) { -1 } }
+        cp_eep_prune_table[0][0] = 0
+        distance = 0
+        num_filled = 1
+        while (num_filled != NUM_CP * NUM_E_EP) {
+            for (i_cp in 0 until NUM_CP) {
+                for (i_eep in 0 until NUM_E_EP) {
+                    if (cp_eep_prune_table[i_cp][i_eep] == distance) {
+                        for (i_move in 0 until move_names_ph2.size) {
+                            val next_cp = cp_move_table[i_cp][i_move]
+                            val next_eep = e_ep_move_table[i_eep][i_move]
+                            if (cp_eep_prune_table[next_cp][next_eep] == -1) {
+                                cp_eep_prune_table[next_cp][next_eep] = distance + 1
+                                num_filled += 1
                             }
                         }
                     }
                 }
-                distance += 1
             }
+            distance += 1
         }
-        //Log.d("kotlintest", "cp_eep is $time_cp_eep")
-        //Log.d("kotlintest", "start udep_eep_prune_table")
-        val time_udep_eep = measureTimeMillis {
-            udep_eep_prune_table = Array<Array<Int>>(NUM_UD_EP) { Array<Int>(NUM_E_EP) { -1 } }
-            udep_eep_prune_table[0][0] = 0
-            distance = 0
-            num_filled = 1
-            while (num_filled != NUM_UD_EP * NUM_E_EP) {
-                for (i_udep in 0 until NUM_UD_EP) {
-                    for (i_eep in 0 until NUM_E_EP) {
-                        if (udep_eep_prune_table[i_udep][i_eep] == distance) {
-                            for (i_move in 0 until move_names_ph2.size) {
-                                val next_udep = ud_ep_move_table[i_udep][i_move]
-                                val next_eep = e_ep_move_table[i_eep][i_move]
-                                if (udep_eep_prune_table[next_udep][next_eep] == -1) {
-                                    udep_eep_prune_table[next_udep][next_eep] = distance + 1
-                                    num_filled += 1
-                                }
+        udep_eep_prune_table = Array<Array<Int>>(NUM_UD_EP) { Array<Int>(NUM_E_EP) { -1 } }
+        udep_eep_prune_table[0][0] = 0
+        distance = 0
+        num_filled = 1
+        while (num_filled != NUM_UD_EP * NUM_E_EP) {
+            for (i_udep in 0 until NUM_UD_EP) {
+                for (i_eep in 0 until NUM_E_EP) {
+                    if (udep_eep_prune_table[i_udep][i_eep] == distance) {
+                        for (i_move in 0 until move_names_ph2.size) {
+                            val next_udep = ud_ep_move_table[i_udep][i_move]
+                            val next_eep = e_ep_move_table[i_eep][i_move]
+                            if (udep_eep_prune_table[next_udep][next_eep] == -1) {
+                                udep_eep_prune_table[next_udep][next_eep] = distance + 1
+                                num_filled += 1
                             }
                         }
                     }
                 }
-                distance += 1
             }
+            distance += 1
         }
-        //Log.d("kotlintest", "udep_eep is $time_udep_eep")
-        //Log.d("kotlintest", "All Job Time = ${time_co + time_eo + time_e_comb + time_cp + time_ud_ep + time_e_ep + time_co_eec + time_eo_eec + time_cp_eep + time_udep_eep}")
     }
 
     fun co_to_index(co: Array<Int>): Int {
@@ -283,9 +234,9 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
 
     fun index_to_co(index: Int): Array<Int> {
         var index_tmp = index
-        var co = Array<Int>(8){0}
+        var co = Array<Int>(8) { 0 }
         var sum_co = 0
-        for(i in 6 downTo 0) {
+        for (i in 6 downTo 0) {
             co[i] = index_tmp % 3
             index_tmp /= 3
             sum_co += co[i]
@@ -306,9 +257,9 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
 
     fun index_to_eo(index: Int): Array<Int> {
         var index_tmp = index
-        var eo = Array<Int>(12){0}
+        var eo = Array<Int>(12) { 0 }
         var sum_eo = 0
-        for(i in 10 downTo 0) {
+        for (i in 10 downTo 0) {
             eo[i] = index_tmp % 2
             index_tmp /= 2
             sum_eo += eo[i]
@@ -318,7 +269,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         return eo
     }
 
-    fun calc_combination(n: Int, r:Int): Int {
+    fun calc_combination(n: Int, r: Int): Int {
         var ret = 1
         for (i in 0 until r) ret *= n - i
         for (i in 0 until r) ret /= r - i
@@ -339,7 +290,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
 
     fun index_to_e_combination(index: Int): Array<Int> {
         var index_tmp = index
-        var combination = Array<Int>(12){0}
+        var combination = Array<Int>(12) { 0 }
         var r = 4
         for (i in 12 - 1 downTo 0) {
             if (index_tmp >= calc_combination(i, r)) {
@@ -355,7 +306,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         var index = 0
         for (i in cp.indices) {
             index *= 8 - i
-            for (j in i + 1 until 8){
+            for (j in i + 1 until 8) {
                 if (cp[i] > cp[j]) {
                     index += 1
                 }
@@ -366,7 +317,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
 
     fun index_to_cp(index: Int): Array<Int> {
         var index_tmp = index
-        var cp = Array<Int>(8){0}
+        var cp = Array<Int>(8) { 0 }
         for (i in 6 downTo 0) {
             cp[i] = index_tmp % (8 - i)
             index_tmp /= 8 - i
@@ -383,7 +334,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         var index = 0
         for (i in ep.indices) {
             index *= 8 - i
-            for (j in i + 1 until 8){
+            for (j in i + 1 until 8) {
                 if (ep[i] > ep[j]) {
                     index += 1
                 }
@@ -394,7 +345,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
 
     fun index_to_ud_ep(index: Int): Array<Int> {
         var index_tmp = index
-        var ep = Array<Int>(8){0}
+        var ep = Array<Int>(8) { 0 }
         for (i in 6 downTo 0) {
             ep[i] = index_tmp % (8 - i)
             index_tmp /= 8 - i
@@ -422,7 +373,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
 
     fun index_to_e_ep(index: Int): Array<Int> {
         var index_tmp = index
-        var eep = Array<Int>(4){0}
+        var eep = Array<Int>(4) { 0 }
         for (i in 4 - 2 downTo 0) {
             eep[i] = index_tmp % (4 - i)
             index_tmp /= 4 - i
@@ -507,7 +458,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         max_solution_length = max_length
         var co_index = co_to_index(initial_state.co)
         var eo_index = eo_to_index(initial_state.eo)
-        var e_combination = Array<Int>(initial_state.ep.size){
+        var e_combination = Array<Int>(initial_state.ep.size) {
             if (initial_state.ep[it] in 0..3) {
                 1
             } else {
@@ -549,6 +500,7 @@ class Search(val initial_state: State, moves_arg: MutableMap<String, State>, mov
         val NUM_E_COMBINATIONS = 495  // 12C4
 
         val NUM_CP = 40320  // 8!
+
         //        val NUM_EP = 479001600  // 12! # これは使わない
         val NUM_UD_EP = 40320  // 8!
         val NUM_E_EP = 24  // 4!

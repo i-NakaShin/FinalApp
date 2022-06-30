@@ -13,7 +13,7 @@ import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidFragmentApplication
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class HomeActivity : AndroidApplication() , AndroidFragmentApplication.Callbacks{
+class HomeActivity : AndroidApplication(), AndroidFragmentApplication.Callbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

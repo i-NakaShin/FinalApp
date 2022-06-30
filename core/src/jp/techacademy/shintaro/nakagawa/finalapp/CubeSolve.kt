@@ -15,10 +15,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController
 
-
-/**
- * Rubik's cube in libgdx
- */
 class CubeSolve(private val isDetect: Boolean = false,
                 private val isBack: Boolean = false,
                 private val isSolving: Boolean = false,
@@ -35,9 +31,6 @@ class CubeSolve(private val isDetect: Boolean = false,
     private var fpsCache: BitmapFontCache? = null
     private var hudBatch: SpriteBatch? = null
 
-    /**
-     * @return The cube being rendered
-     */
     var cube: Cube? = null
     private var solved = true
     private var lastFpsUpdate: Long = 0
@@ -48,7 +41,7 @@ class CubeSolve(private val isDetect: Boolean = false,
         environment!!.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, 1f, 1f, 1f))
         environment!!.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -1f, -1f))
         modelBatch = ModelBatch()
-        cube = Cube(3, isDetect,isSolving = isSolving, colorArray = colorArray, sidePosition = sidePosition, solveArray = solveArray)
+        cube = Cube(3, isDetect, isSolving = isSolving, colorArray = colorArray, sidePosition = sidePosition, solveArray = solveArray)
         cube!!.solving()
         cam = PerspectiveCamera(67f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         cam!!.position[13f, 13f] = 13f
@@ -56,44 +49,58 @@ class CubeSolve(private val isDetect: Boolean = false,
 
         if (isDetect) {
             when (sidePosition) {
-                -1 -> { cam!!.position[0f, 20f] = 0f
-                        cam!!.lookAt(0f, 0f, 0f)
-                        cam!!.rotate(-45f, 0f, 1f, 0f) }
+                -1 -> {
+                    cam!!.position[0f, 20f] = 0f
+                    cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                }
 
-                0  -> { cam!!.position[0f, 20f] = 0f
-                        cam!!.lookAt(0f, 0f, 0f)
-                        cam!!.rotate(-45f, 0f, 1f, 0f)
-                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -45f) }
+                0 -> {
+                    cam!!.position[0f, 20f] = 0f
+                    cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -45f)
+                }
 
-                1  -> { cam!!.position[0f, 20f] = 0f
-                        cam!!.lookAt(0f, 0f, 0f)
-                        cam!!.rotate(-45f, 0f, 1f, 0f)
-                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
-                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 60f) }
+                1 -> {
+                    cam!!.position[0f, 20f] = 0f
+                    cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 60f)
+                }
 
-                2  -> { cam!!.position[0f, 20f] = 0f
-                        cam!!.lookAt(0f, 0f, 0f)
-                        cam!!.rotate(-45f, 0f, 1f, 0f)
-                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
-                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 150f) }
+                2 -> {
+                    cam!!.position[0f, 20f] = 0f
+                    cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 150f)
+                }
 
-                3  -> { cam!!.position[0f, 20f] = 0f
-                        cam!!.lookAt(0f, 0f, 0f)
-                        cam!!.rotate(-45f, 0f, 1f, 0f)
-                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
-                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 240f) }
+                3 -> {
+                    cam!!.position[0f, 20f] = 0f
+                    cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -60f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 240f)
+                }
 
-                4  -> { cam!!.position[0f, 20f] = 0f
-                        cam!!.lookAt(0f, 0f, 0f)
-                        cam!!.rotate(-45f, 0f, 1f, 0f)
-                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -150f)
-                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 270f) }
+                4 -> {
+                    cam!!.position[0f, 20f] = 0f
+                    cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -150f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 270f)
+                }
 
-                5  -> { cam!!.position[0f, 20f] = 0f
-                        cam!!.lookAt(0f, 0f, 0f)
-                        cam!!.rotate(-45f, 0f, 1f, 0f)
-                        cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -150f)
-                        cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 270f) }
+                5 -> {
+                    cam!!.position[0f, 20f] = 0f
+                    cam!!.lookAt(0f, 0f, 0f)
+                    cam!!.rotate(-45f, 0f, 1f, 0f)
+                    cube!!.modelInstance!!.transform.rotate(1f, 0f, 0f, -150f)
+                    cube!!.modelInstance!!.transform.rotate(0f, 1f, 0f, 270f)
+                }
             }
         }
         if (isSolving) {
@@ -107,7 +114,6 @@ class CubeSolve(private val isDetect: Boolean = false,
         cam!!.update()
         hudCam = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         hudBatch = SpriteBatch()
-//        hudBatch!!.projectionMatrix = hudCam!!.combined
         fpsFont = BitmapFont()
         if (Gdx.app.type == Application.ApplicationType.Desktop || Gdx.app.type == Application.ApplicationType.WebGL) {
             controlsCache = BitmapFontCache(fpsFont, true)
@@ -125,7 +131,6 @@ class CubeSolve(private val isDetect: Boolean = false,
     override fun render() {
         hudBatch?.let { it.projectionMatrix = hudCam!!.combined }
         camController?.let { it.update() }
-//        updateFpsCache()
         Gdx.gl.glClearColor(0.2f,
                 if (solved) 0.2f + (1 + Math.sin((System.currentTimeMillis() % 6282 / 200.0f).toDouble()).toFloat()) * 0.05f else 0.2f,
                 0.2f, 1f)
@@ -135,10 +140,6 @@ class CubeSolve(private val isDetect: Boolean = false,
         modelBatch?.let { it.end() }
         hudBatch?.let {
             it.begin()
-            //        fpsCache!!.draw(hudBatch)
-            if (Gdx.app.type == Application.ApplicationType.Desktop || Gdx.app.type == Application.ApplicationType.WebGL) {
-                //            controlsCache?.draw(hudBatch)
-            }
             it.end()
         }
     }
@@ -167,10 +168,6 @@ class CubeSolve(private val isDetect: Boolean = false,
     override fun pause() {}
     override fun resume() {}
 
-    /**
-     * Check whether the cube is solved.
-     * Should be called every time the cube changes.
-     */
     fun updateSolved() {
         solved = cube!!.isSolved
         if (solved) {
@@ -181,11 +178,10 @@ class CubeSolve(private val isDetect: Boolean = false,
     }
 
     private fun createControlsCache() {
-        // The controls only matter for desktop since it's the only platform with a keyboard
         if (Gdx.app.type == Application.ApplicationType.Desktop || Gdx.app.type == Application.ApplicationType.WebGL) {
             controlsCache!!.clear()
             var y = fpsFont!!.lineHeight
-            for (i in CONTROLS_INFO.indices.reversed()) { // Backwards because Y is upside down
+            for (i in CONTROLS_INFO.indices.reversed()) {
                 val s = CONTROLS_INFO[i]
                 controlsCache!!.addText(s, 4f, y)
                 y += fpsFont!!.lineHeight

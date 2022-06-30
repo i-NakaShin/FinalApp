@@ -16,7 +16,7 @@ class TimeAttackActivity : AppCompatActivity() {
     val agreeRange = (0..2)
     var moveList = ""
     val face = hashMapOf<Int, String>(0 to "U", 1 to "D", 2 to "L",
-                                      3 to "R", 4 to "F", 5 to "B")
+            3 to "R", 4 to "F", 5 to "B")
     val agree = hashMapOf<Int, String>(0 to "", 1 to "'", 2 to "2")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +60,6 @@ class TimeAttackActivity : AppCompatActivity() {
             isStart = false
             scramble()
             scrambleText.text = moveList
-//            scrambleText.visibility = View.VISIBLE
             start.text = "START"
             timeValue = 0
             timeToText()?.let {

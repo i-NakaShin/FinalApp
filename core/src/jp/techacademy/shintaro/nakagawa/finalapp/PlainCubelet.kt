@@ -3,10 +3,6 @@ package jp.techacademy.shintaro.nakagawa.finalapp
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder
 
-
-/**
- * Cubelet surrounded on 4 sides with the same color
- */
 class PlainCubelet(private var topColor: CubeletColor, private var bottomColor: CubeletColor,
                    private var westColor: CubeletColor, private var eastColor: CubeletColor,
                    private var northColor: CubeletColor, private var southColor: CubeletColor) : Cubelet {
@@ -197,34 +193,17 @@ class PlainCubelet(private var topColor: CubeletColor, private var bottomColor: 
         BLACK(0f, 0f, 0f),
         GRAY(0.4f, 0.4f, 0.4f);
 
-        /**
-         * @return The GDX color representing the cubelet color
-         */
         val gdxColor: Color
 
-        /**
-         * Create a cubelet with the specified RGB color
-         *
-         * @param red   Intensity, between 0.0 and 1.0, inclusive, of the red channel
-         * @param green Intensity, between 0.0 and 1.0, inclusive, of the green channel
-         * @param blue  Intensity, between 0.0 and 1.0, inclusive, of the blue channel
-         */
         init {
             gdxColor = Color(red, green, blue, 1f /*Opaque*/)
         }
     }
 
-    /**
-     * Side of a cubelet
-     */
     enum class CubeletSide {
         TOP, BOTTOM, WEST, EAST, NORTH, SOUTH
     }
 
-    /**
-     * Create a plain cubelet with the specified colors
-     * If there is no color on a side, use CubeletColor.NONE
-     */
     init {
         northMask = southMask
         eastMask = northMask

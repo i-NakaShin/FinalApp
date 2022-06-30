@@ -96,10 +96,6 @@ class SolvingActivity : AppCompatActivity() {
         sAdapter = SolveAdapter(this, data, num)
         solutionList.adapter = sAdapter
 
-//        val drawListener = CubeSolve(isSolving = true, colorArray = cubelets, solveArray = solveArray.slice(0 until num).toMutableList())
-//        val view: View = initializeForView(drawListener)
-//        r.addView(view)
-
         prevButton.setOnClickListener {
             if (num == 0) {
                 num = data.size
@@ -107,13 +103,6 @@ class SolvingActivity : AppCompatActivity() {
             num--
             sAdapter.update(num)
             sAdapter.notifyDataSetChanged()
-
-            if (num > 0) {
-//                val drawListener = CubeSolve(isSolving = true, colorArray = cubelets, solveArray = solveArray.slice(0 until num).toMutableList())
-//                val view: View = initializeForView(drawListener)
-//                r.removeAllViews()
-//                r.addView(view)
-            }
         }
         nextButton.setOnClickListener {
             if (num == data.size) {
@@ -122,13 +111,6 @@ class SolvingActivity : AppCompatActivity() {
             num++
             sAdapter.update(num)
             sAdapter.notifyDataSetChanged()
-
-            if (num < data.size - 1) {
-//                val drawListener = CubeSolve(isSolving = true, colorArray = cubelets, solveArray = solveArray.slice(0 until num).toMutableList())
-//                val view: View = initializeForView(drawListener)
-//                r.removeAllViews()
-//                r.addView(view)
-            }
         }
         homeButton.setOnClickListener {
             val intent = Intent(this, HomeActivity::class.java)
@@ -190,19 +172,19 @@ class SolvingActivity : AppCompatActivity() {
         val colorList = mutableMapOf(cubelet[1][2][1]!!.getColor(faceList[0]) to 0, cubelet[1][0][1]!!.getColor(faceList[1]) to 1,
                 cubelet[0][1][1]!!.getColor(faceList[2]) to 2, cubelet[2][1][1]!!.getColor(faceList[3]) to 3,
                 cubelet[1][1][2]!!.getColor(faceList[4]) to 4, cubelet[1][1][0]!!.getColor(faceList[5]) to 5)
-        var cp = Array<Int>(8){0}
-        var co = Array<Int>(8){0}
-        var ep = Array<Int>(12){0}
-        var eo = Array<Int>(12){0}
-        var c = Array<Array<Int>>(default_cp.size) { Array<Int>(default_cp[0].size) {0} }
-        var e = Array<Array<Int>>(default_ep.size) { Array<Int>(default_ep[0].size) {0} }
+        var cp = Array<Int>(8) { 0 }
+        var co = Array<Int>(8) { 0 }
+        var ep = Array<Int>(12) { 0 }
+        var eo = Array<Int>(12) { 0 }
+        var c = Array<Array<Int>>(default_cp.size) { Array<Int>(default_cp[0].size) { 0 } }
+        var e = Array<Array<Int>>(default_ep.size) { Array<Int>(default_ep[0].size) { 0 } }
 
         for ((k, v) in colorList) {
             when (k) {
-                PlainCubelet.CubeletColor.WHITE  -> faceColor[v] = "白"
-                PlainCubelet.CubeletColor.RED    -> faceColor[v] = "赤"
-                PlainCubelet.CubeletColor.GREEN  -> faceColor[v] = "緑"
-                PlainCubelet.CubeletColor.BLUE   -> faceColor[v] = "青"
+                PlainCubelet.CubeletColor.WHITE -> faceColor[v] = "白"
+                PlainCubelet.CubeletColor.RED -> faceColor[v] = "赤"
+                PlainCubelet.CubeletColor.GREEN -> faceColor[v] = "緑"
+                PlainCubelet.CubeletColor.BLUE -> faceColor[v] = "青"
                 PlainCubelet.CubeletColor.ORANGE -> faceColor[v] = "橙"
                 PlainCubelet.CubeletColor.YELLOW -> faceColor[v] = "黄"
                 else -> return null
@@ -214,9 +196,11 @@ class SolvingActivity : AppCompatActivity() {
                 val x = (i + 1) / 2 % 2 * 2
                 val z = i / 2 % 2 * 2
                 if (i < c.size / 2) {
-                    c[i][j] = colorList[cubelet[x][2][z]!!.getColor(faceList[default_cp[i][j]])] ?: return null
+                    c[i][j] = colorList[cubelet[x][2][z]!!.getColor(faceList[default_cp[i][j]])]
+                            ?: return null
                 } else {
-                    c[i][j] = colorList[cubelet[x][0][z]!!.getColor(faceList[default_cp[i][j]])] ?: return null
+                    c[i][j] = colorList[cubelet[x][0][z]!!.getColor(faceList[default_cp[i][j]])]
+                            ?: return null
                 }
             }
         }
@@ -229,11 +213,14 @@ class SolvingActivity : AppCompatActivity() {
                 if (i < e.size / 3) {
                     x = (i + 1) / 2 % 2 * 2
                     z = i / 2 % 2 * 2
-                    e[i][j] = colorList[cubelet[x][1][z]!!.getColor(faceList[default_ep[i][j]])] ?: return null
+                    e[i][j] = colorList[cubelet[x][1][z]!!.getColor(faceList[default_ep[i][j]])]
+                            ?: return null
                 } else if (i < e.size / 3 * 2) {
-                    e[i][j] = colorList[cubelet[x][2][z]!!.getColor(faceList[default_ep[i][j]])] ?: return null
+                    e[i][j] = colorList[cubelet[x][2][z]!!.getColor(faceList[default_ep[i][j]])]
+                            ?: return null
                 } else {
-                    e[i][j] = colorList[cubelet[x][0][z]!!.getColor(faceList[default_ep[i][j]])] ?: return null
+                    e[i][j] = colorList[cubelet[x][0][z]!!.getColor(faceList[default_ep[i][j]])]
+                            ?: return null
                 }
             }
         }
